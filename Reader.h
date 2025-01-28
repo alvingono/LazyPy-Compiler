@@ -2,7 +2,7 @@
 ************************************************************
 * COMPILERS COURSE - Algonquin College
 * Code version: Fall, 2024
-* Author: TO_DO
+* Author: Alvin Gono , Igoor Wambiyakaley
 * Professors: Paulo Sousa
 ************************************************************
 #
@@ -11,19 +11,22 @@
 # ECHO "=---------------------------------------="
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@           %&@@@@@@@@@@@     @@    ”
-# ECHO "    @@       @%% (@@@@@@@@@  @     @@    ”
-# ECHO "    @@      @& @   @ @       @     @@    ”
-# ECHO "    @@     @ @ %  / /   @@@@@@     @@    ”
-# ECHO "    @@      & @ @  @@              @@    ”
-# ECHO "    @@       @/ @*@ @ @   @        @@    ”
-# ECHO "    @@           @@@@  @@ @ @      @@    ”
-# ECHO "    @@            /@@    @@@ @     @@    ”
-# ECHO "    @@     @      / /     @@ @     @@    ”
-# ECHO "    @@     @ @@   /@/   @@@ @      @@    ”
-# ECHO "    @@     @@@@@@@@@@@@@@@         @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLLLLLLLL  PPPPPPP      @@    ”
+# ECHO "    @@     LLLLLLLLL  PPP   PPP    @@    ”
+# ECHO "    @@                PP      PP   @@    ”
+# ECHO "    @@                PPP   PPP    @@    ”
+# ECHO "    @@                PPPPPPP      @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@         S O F I A           @@    ”
+# ECHO "    @@           LAZY PY           @@    ”
 # ECHO "    @@                             @@    ”
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "                                         "
@@ -78,7 +81,7 @@ enum READER_MODE {
 /* Constants about controls (not need to change) */
 #define READER_TERMINATOR	'\0'							/* General EOF */
 
-/* CONSTANTS DEFINITION: PREFIXED BY LANGUAGE NAME (SOFIA) .................................. */
+/* CONSTANTS DEFINITION: PREFIXED BY LANGUAGE NAME (LP) .................................. */
 
 /* You should add your own constant definitions here */
 #define READER_MAX_SIZE	INT_MAX-1	/* maximum capacity */ 
