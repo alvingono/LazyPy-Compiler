@@ -7,23 +7,26 @@
 ************************************************************
 #
 # ECHO "=---------------------------------------="
-# ECHO "|  COMPILERS - ALGONQUIN COLLEGE (S24)  |"
+# ECHO "|  COMPILERS - ALGONQUIN COLLEGE (F24)  |"
 # ECHO "=---------------------------------------="
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@           %&@@@@@@@@@@@     @@    ”
-# ECHO "    @@       @%% (@@@@@@@@@  @     @@    ”
-# ECHO "    @@      @& @   @ @       @     @@    ”
-# ECHO "    @@     @ @ %  / /   @@@@@@     @@    ”
-# ECHO "    @@      & @ @  @@              @@    ”
-# ECHO "    @@       @/ @*@ @ @   @        @@    ”
-# ECHO "    @@           @@@@  @@ @ @      @@    ”
-# ECHO "    @@            /@@    @@@ @     @@    ”
-# ECHO "    @@     @      / /     @@ @     @@    ”
-# ECHO "    @@     @ @@   /@/   @@@ @      @@    ”
-# ECHO "    @@     @@@@@@@@@@@@@@@         @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLLLLLLLL  PPPPPPP      @@    ”
+# ECHO "    @@     LLLLLLLLL  PPP   PPP    @@    ”
+# ECHO "    @@                PP      PP   @@    ”
+# ECHO "    @@                PPP   PPP    @@    ”
+# ECHO "    @@                PPPPPPP      @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@         S O F I A           @@    ”
+# ECHO "    @@           LAZY PY           @@    ”
 # ECHO "    @@                             @@    ”
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "                                         "

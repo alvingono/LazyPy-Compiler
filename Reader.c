@@ -2,7 +2,7 @@
 ************************************************************
 * COMPILERS COURSE - Algonquin College
 * Code version: Fall, 2024
-* Author: TO_DO
+* Author: Alvin Gono
 * Professors: Paulo Sousa
 ************************************************************
 #
@@ -11,19 +11,22 @@
 # ECHO "=---------------------------------------="
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@           %&@@@@@@@@@@@     @@    ”
-# ECHO "    @@       @%% (@@@@@@@@@  @     @@    ”
-# ECHO "    @@      @& @   @ @       @     @@    ”
-# ECHO "    @@     @ @ %  / /   @@@@@@     @@    ”
-# ECHO "    @@      & @ @  @@              @@    ”
-# ECHO "    @@       @/ @*@ @ @   @        @@    ”
-# ECHO "    @@           @@@@  @@ @ @      @@    ”
-# ECHO "    @@            /@@    @@@ @     @@    ”
-# ECHO "    @@     @      / /     @@ @     @@    ”
-# ECHO "    @@     @ @@   /@/   @@@ @      @@    ”
-# ECHO "    @@     @@@@@@@@@@@@@@@         @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLL                     @@    ”
+# ECHO "    @@     LLLLLLLLL  PPPPPPP      @@    ”
+# ECHO "    @@     LLLLLLLLL  PPP   PPP    @@    ”
+# ECHO "    @@                PP      PP   @@    ”
+# ECHO "    @@                PPP   PPP    @@    ”
+# ECHO "    @@                PPPPPPP      @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
+# ECHO "    @@                PPP          @@    ”
 # ECHO "    @@                             @@    ”
-# ECHO "    @@         S O F I A           @@    ”
+# ECHO "    @@           LAZY PY           @@    ”
 # ECHO "    @@                             @@    ”
 # ECHO "    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    ”
 # ECHO "                                         "
@@ -87,6 +90,13 @@ BufferPointer readerCreate(lp_intg size, lp_intg increment, lp_char mode) {
 	BufferPointer readerPointer;
 	lp_intg count = 0;
 	/* TO_DO: Defensive programming */
+	if (size < 0)
+		size = READER_DEFAULT_SIZE;
+	if (increment < 0)
+		increment = READER_DEFAULT_INCREMENT;
+	if (mode!='f' && mode != 'a' && mode != 'm')
+		return LP_INVALID;
+
 	if (!size)
 		size = READER_DEFAULT_SIZE;
 	if (!increment)
@@ -97,14 +107,30 @@ BufferPointer readerCreate(lp_intg size, lp_intg increment, lp_char mode) {
 	if (!readerPointer)
 		return LP_INVALID;
 	readerPointer->content = (lp_string)malloc(size);
-	/* TO_DO: Defensive programming */
+	if (!readerPointer->content)
+		return LP_INVALID;
+
 	/* TO_DO: Initialize the histogram */
+	for (int i = 0; i < 127; i++) {
+		readerPointer->histogram[i] = 0;
+	}
+	
 	/* TO_DO: Initialize errors */
+	readerPointer->numReaderErrors = 0;
+
 	readerPointer->mode = mode;
 	readerPointer->size = size;
 	readerPointer->increment = increment;
+
 	/* TO_DO: Initialize flags */
+	readerPointer->flags.isEmpty = 0;
+	readerPointer->flags.isFull = 0;
+	readerPointer->flags.isMoved = 0;
+	readerPointer->flags.isRead = 0;
+
 	/* TO_DO: Default checksum */
+
+
 	return readerPointer;
 }
 
