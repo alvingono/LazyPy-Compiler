@@ -84,6 +84,10 @@ enum READER_MODE {
 /* CONSTANTS DEFINITION: PREFIXED BY LANGUAGE NAME (LP) .................................. */
 
 /* You should add your own constant definitions here */
+
+
+
+
 #define READER_MAX_SIZE	INT_MAX-1	/* maximum capacity */ 
 
 #define READER_DEFAULT_SIZE			250		/* default initial buffer reader capacity */
