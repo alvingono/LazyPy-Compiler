@@ -2,7 +2,7 @@
 ************************************************************
 * COMPILERS COURSE - Algonquin College
 * Code version: Fall, 2024
-* Author: Alvin Gono
+* Author: Alvin Gono AND Igor Wambyakaley
 * Professors: Paulo Sousa
 ************************************************************
 #
