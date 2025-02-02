@@ -454,8 +454,19 @@ lp_intg readerLoad(BufferPointer readerPointer, FILE* const fileDescriptor) {
 */
 lp_boln readerRecover(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer) {
+		return LP_INVALID;
+	}
 	/* TO_DO: Recover positions: read and mark must be zero */
+
 	/* TO_DO: Update flags */
+	
+	readerPointer->flags.isRead = LP_FALSE;
+
+	
+	readerPointer->positions.read = 0;
+	readerPointer->positions.mark = 0;
+
 	return LP_TRUE;
 }
 
@@ -476,7 +487,11 @@ lp_boln readerRecover(BufferPointer const readerPointer) {
 */
 lp_boln readerRetract(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer || readerPointer->positions.read == 0)
+		return LP_FALSE;
 	/* TO_DO: Retract (return 1 pos read) */
+	readerPointer->positions.read--;
+
 	return LP_TRUE;
 }
 
@@ -497,7 +512,11 @@ lp_boln readerRetract(BufferPointer const readerPointer) {
 */
 lp_boln readerRestore(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_FALSE;
 	/* TO_DO: Restore positions (read to mark) */
+	readerPointer->positions.read = readerPointer->positions.mark;
+
 	return LP_TRUE;
 }
 
@@ -520,6 +539,9 @@ lp_boln readerRestore(BufferPointer const readerPointer) {
 lp_char readerGetChar(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Check condition to read/wrte */
+	/* TO_DO: Defensive programming */
+	if (!readerPointer || readerPointer->positions.read >= readerPointer->positions.wrte)
+		return READER_TERMINATOR;
 	return readerPointer->content[readerPointer->positions.read++];
 }
 
@@ -541,6 +563,9 @@ lp_char readerGetChar(BufferPointer const readerPointer) {
 */
 lp_string readerGetContent(BufferPointer const readerPointer, lp_intg pos) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer || pos < 0 || pos >= readerPointer->positions.wrte)
+		return LP_INVALID;
+
 	return readerPointer->content + pos;
 }
 
@@ -562,8 +587,10 @@ lp_string readerGetContent(BufferPointer const readerPointer, lp_intg pos) {
 */
 lp_intg readerGetPosRead(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Return read */
-	return 0;
+	return readerPointer->positions.read;
 }
 
 
@@ -583,8 +610,11 @@ lp_intg readerGetPosRead(BufferPointer const readerPointer) {
 */
 lp_intg readerGetPosWrte(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Return wrte */
-	return 0;
+
+	return readerPointer->positions.wrte;
 }
 
 
@@ -604,8 +634,10 @@ lp_intg readerGetPosWrte(BufferPointer const readerPointer) {
 */
 lp_intg readerGetPosMark(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Return mark */
-	return 0;
+	return readerPointer->positions.mark;
 }
 
 
@@ -625,8 +657,10 @@ lp_intg readerGetPosMark(BufferPointer const readerPointer) {
 */
 lp_intg readerGetSize(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Return size */
-	return 0;
+	return readerPointer->size;
 }
 
 /*
@@ -645,8 +679,10 @@ lp_intg readerGetSize(BufferPointer const readerPointer) {
 */
 lp_intg readerGetInc(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Return increment */
-	return 0;
+	return readerPointer->increment;
 }
 
 /*
@@ -665,8 +701,11 @@ lp_intg readerGetInc(BufferPointer const readerPointer) {
 */
 lp_char readerGetMode(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_INVALID;
+
 	/* TO_DO: Return mode */
-	return '\0';
+	return readerPointer->mode;
 }
 
 /*
@@ -682,8 +721,17 @@ lp_char readerGetMode(BufferPointer const readerPointer) {
 *************************************************************
 */
 lp_void readerPrintStat(BufferPointer const readerPointer) {
+	lp_intg i;
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return;
 	/* TO_DO: Updates the histogram */
+	printf("Character Frequency Histogram:\n");
+	for (i = 0; i < NCHAR; i++) {
+		if (readerPointer->histogram[i] > 0) {
+			printf("%c : %d || ", (lp_char)i, readerPointer->histogram[i]);
+		}
+	}
 }
 
 /*
@@ -701,8 +749,10 @@ lp_void readerPrintStat(BufferPointer const readerPointer) {
 */
 lp_intg readerGetNumErrors(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_ERROR;
 	/* TO_DO: Returns the number of errors */
-	return 0;
+	return readerPointer->numReaderErrors;
 }
 
 /*
@@ -722,7 +772,14 @@ lp_intg readerGetNumErrors(BufferPointer const readerPointer) {
 
 lp_void readerCalcChecksum(BufferPointer readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return;
 	/* TO_DO: Calculate checksum */
+	lp_byte checksum = 0;
+	for (lp_intg i = 0; i < readerPointer->positions.wrte; i++) {
+		checksum ^= readerPointer->content[i];
+	}
+	readerPointer->checksum = checksum;
 }
 
 /*
@@ -742,6 +799,14 @@ lp_void readerCalcChecksum(BufferPointer readerPointer) {
 
 lp_boln readerPrintFlags(BufferPointer readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return LP_FALSE;
 	/* TO_DO: Shows flags */
+	printf("Flags: Empty=%d, Full=%d, Read=%d, Moved=%d\n",
+		readerPointer->flags.isEmpty,
+		readerPointer->flags.isFull,
+		readerPointer->flags.isRead,
+		readerPointer->flags.isMoved);
+
 	return LP_TRUE;
 }
