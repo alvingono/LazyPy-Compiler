@@ -729,7 +729,7 @@ lp_void readerPrintStat(BufferPointer const readerPointer) {
 	printf("Character Frequency Histogram:\n");
 	for (i = 0; i < NCHAR; i++) {
 		if (readerPointer->histogram[i] > 0) {
-			printf("%c : %d || ", (lp_char)i, readerPointer->histogram[i]);
+			printf("'%c' : %d || ", (lp_char)i, readerPointer->histogram[i]);
 		}
 	}
 }
