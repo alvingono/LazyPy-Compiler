@@ -9,7 +9,8 @@
         "name": "LazyPy.exe",
         "args": [
             "1",
-            "README.txt"
+            "INPUT3_Factorial.lp",
+                "a"
         ]
     }
   ]

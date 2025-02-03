@@ -390,16 +390,11 @@ lp_intg readerPrint(BufferPointer const readerPointer) {
 	}
 	c = readerGetChar(readerPointer);
 	while (cont < readerPointer->positions.wrte) {
-		if ((lp_intg)c >= 0 && (lp_intg)c < 128) {
-			cont++;
-			printf("%c", c);
-			c = readerGetChar(readerPointer);
-		}
-		else {
-			return LP_INVALID;
-		}
-		
+		cont++;
+		printf("%c", c);
+		c = readerGetChar(readerPointer);
 	}
+
 	return cont;
 }
 
