@@ -160,7 +160,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 	lp_char tempChar = ' ';
 	/* TO_DO: Defensive programming */
 	if (!readerPointer)
-		return LP_FALSE;
+		return LP_ERROR;
 	/* TO_DO: Reset Realocation */
 	readerPointer->flags.isMoved = LP_FALSE;
 	/* TO_DO: Test the inclusion of chars */
@@ -177,7 +177,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Update the last position with Terminator */
 			readerPointer->content[readerPointer->positions.wrte++] = READER_TERMINATOR;
 			
-			return LP_INVALID;
+			return LP_ERROR;
 			break;
 		case MODE_ADDIT:
 			/* TO_DO: Update size for Additive mode */
@@ -186,7 +186,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Defensive programming */
 			if (newSize < readerPointer->size) {
 				readerPointer->flags.isFull = LP_TRUE;
-				return LP_INVALID;
+				return LP_ERROR;
 			}
 			break;
 		case MODE_MULTI:
@@ -195,18 +195,18 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Defensive programming */
 			if (newSize < readerPointer->size) {
 				readerPointer->flags.isFull = LP_TRUE;
-				return LP_INVALID;
+				return LP_ERROR;
 			}
 			break;
 		default:
-			return LP_INVALID;
+			return LP_ERROR;
 		}
 		/* TO_DO: Reallocate */
 		tempReader = realloc(readerPointer->content, newSize);
 
 		/* TO_DO: Defensive programming */
 		if (!tempReader) {
-			return LP_INVALID;
+			return LP_ERROR;
 		}
 		readerPointer->content = tempReader;
 		readerPointer->size = newSize;
@@ -242,7 +242,7 @@ lp_boln readerClear(BufferPointer const readerPointer) {
 	/* TO_DO: Adjust the write, mark and read to zero */
 	/* TO_DO: Adjust flags */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 	readerPointer->flags.isEmpty = LP_FALSE;
 	readerPointer->flags.isFull = LP_FALSE;
@@ -273,7 +273,7 @@ lp_boln readerFree(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Free pointers */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 	free(readerPointer);
 	return LP_TRUE;
@@ -297,7 +297,7 @@ lp_boln readerIsFull(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Check flag if buffer is FUL */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 
 	if (readerPointer->flags.isFull) {
@@ -325,7 +325,7 @@ lp_boln readerIsEmpty(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Check flag if buffer is EMP */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 
 	if (readerPointer->flags.isEmpty) {
@@ -353,7 +353,7 @@ lp_boln readerSetMark(BufferPointer const readerPointer, lp_intg mark) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Adjust mark */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 
 	if (mark >=0 && mark <= readerPointer->positions.wrte) {
@@ -385,7 +385,7 @@ lp_intg readerPrint(BufferPointer const readerPointer) {
 
 	/* Defensive */
 	if (!readerPointer || !readerPointer->content) {
-		return LP_FALSE;
+		return LP_ERROR;
 	}
 
 	if (readerPointer->positions.wrte == 0) {
@@ -423,7 +423,7 @@ lp_intg readerLoad(BufferPointer readerPointer, FILE* const fileDescriptor) {
 	lp_char c;
 	/* TO_DO: Defensive programming */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_ERROR;
 	}
 	while (!feof(fileDescriptor)) {
 		c = (lp_char)fgetc(fileDescriptor);
@@ -454,7 +454,7 @@ lp_intg readerLoad(BufferPointer readerPointer, FILE* const fileDescriptor) {
 lp_boln readerRecover(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	if (!readerPointer) {
-		return LP_INVALID;
+		return LP_FALSE;
 	}
 	/* TO_DO: Recover positions: read and mark must be zero */
 
