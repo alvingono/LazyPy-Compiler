@@ -9,7 +9,7 @@
         "name": "LazyPy.exe",
         "args": [
             "1",
-            "INPUT3_Factorial.lp",
+            "INPUT0_Empty.lp",
                 "a"
         ]
     }

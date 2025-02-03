@@ -380,14 +380,18 @@ lp_boln readerSetMark(BufferPointer const readerPointer, lp_intg mark) {
 *************************************************************
 */
 lp_intg readerPrint(BufferPointer const readerPointer) {
-
-
 	lp_intg cont = 0;
 	lp_char c;
-	/* TO_DO: Defensive programming (including invalid chars) */
-	if (!readerPointer) {
-		return LP_INVALID;
+
+	/* Defensive */
+	if (!readerPointer || !readerPointer->content) {
+		return LP_FALSE;
 	}
+
+	if (readerPointer->positions.wrte == 0) {
+		return 0;
+	}
+
 	c = readerGetChar(readerPointer);
 	while (cont < readerPointer->positions.wrte) {
 		cont++;
