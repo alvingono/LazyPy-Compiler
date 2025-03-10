@@ -15,8 +15,9 @@ project ("LazyPy")
 add_executable (LazyPy
 	"Compilers.h"	"Compilers.c"
 	"Reader.h"		"Reader.c"		"MainReader.c"
+	"Scanner.h"		"Scanner.c"		"MainScanner.c"
 	# TO_DO: Add A22 (Scanner) and A32 (Parser)
-	#"Scanner.h"		"Scanner.c"		"MainScanner.c"
+	
 	#"Parser.h"		"Parser.c"		"MainParser.c"
 )
 

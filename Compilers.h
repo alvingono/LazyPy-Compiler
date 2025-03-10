@@ -118,8 +118,8 @@ Main functions signatures
 lp_intg mainReader(lp_intg argc, lp_string* argv);
 /* TO_DO: Remove comment in next assignments */
 /*
-sofia_intg mainScanner(sofia_intg argc, sofia_string* argv);
-sofia_intg mainParser(sofia_intg argc, sofia_string* argv);
+lp_intg mainScanner(lp_intg argc, lp_string* argv);
+lp_intg mainParser(lp_intg argc, lp_string* argv);
 */
 
 lp_void printLogo();
