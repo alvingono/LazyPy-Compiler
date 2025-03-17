@@ -116,9 +116,10 @@ Main functions signatures
 ------------------------------------------------------------
 */
 lp_intg mainReader(lp_intg argc, lp_string* argv);
+lp_intg mainScanner(lp_intg argc, lp_string* argv);
 /* TO_DO: Remove comment in next assignments */
 /*
-lp_intg mainScanner(lp_intg argc, lp_string* argv);
+
 lp_intg mainParser(lp_intg argc, lp_string* argv);
 */
 

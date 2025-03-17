@@ -64,7 +64,9 @@
 #include <float.h>   /* floating-point types constants */
 
 /* #define NDEBUG to suppress assert() call */
+#define NDEBUG
 #include <assert.h>  /* assert() prototype */
+
 
 /* project header files */
 
@@ -320,26 +322,33 @@ lp_intg nextClass(lp_char c) {
 	case UND_CHR:
 		val = 2;
 		break;
-	case AMP_CHR:
-		val = 3;
+	case PRD_CHR:
+		val = 7;
 		break;
 	case QUT_CHR:
-		val = 4;
-		break;
-	case HST_CHR:
-		val = 6;
-		break;
-	case EOS_CHR:
-	case EOF_CHR:
 		val = 5;
 		break;
+	case HST_CHR:
+		val = 4;
+		break;
+	case AQT_CHR:
+		val = 3;
+		break;
+
+	case LPR_CHR:
+		val = 8;
+		break;
+	case EOS_CHR:
+	
 	default:
 		if (isalpha(c))
 			val = 0;
 		else if (isdigit(c))
 			val = 1;
+		else if (islower(c))
+			val = 6;
 		else
-			val = 7;
+			val = 9;
 	}
 	return val;
 }
@@ -419,7 +428,7 @@ Token funcID(lp_string lexeme) {
 	lp_char lastch = lexeme[length - 1];
 	lp_intg isID = LP_FALSE;
 	switch (lastch) {
-		case AMP_CHR:
+		case LPR_CHR:
 			currentToken.code = MNID_T;
 			scData.scanHistogram[currentToken.code]++;
 			isID = LP_TRUE;

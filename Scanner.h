@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 13
+#define NUM_TOKENS 14
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -89,7 +89,8 @@ enum TOKENS {
 	EOS_T,		/*  9: End of statement (semicolon) */
 	RTE_T,		/* 10: Run-time error token */
 	SEOF_T,		/* 11: Source end-of-file token */
-	CMT_T		/* 12: Comment token */
+	CMT_T,		/* 12: Comment token */
+	FLT_T		/* 13: FLOAT literal token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -106,11 +107,12 @@ static lp_string tokenStrTable[NUM_TOKENS] = {
 	"EOS_T",
 	"RTE_T",
 	"SEOF_T",
-	"CMT_T"
+	"CMT_T",
+	"FLT_T"
 };
 
 /* TO_DO: Operators token attributes */
-typedef enum ArithmeticOperators { OP_ADD, OP_SUB, OP_MUL, OP_DIV } AriOperator;
+typedef enum ArithmeticOperators { OP_ADD, OP_SUB, OP_MUL, OP_DIV , OP_MOD} AriOperator;
 typedef enum RelationalOperators { OP_EQ, OP_NE, OP_GT, OP_LT } RelOperator;
 typedef enum LogicalOperators { OP_AND, OP_OR, OP_NOT } LogOperator;
 typedef enum SourceEndOfFile { SEOF_0, SEOF_255 } EofOperator;
@@ -170,6 +172,14 @@ typedef struct scannerData {
 #define RPR_CHR ')'		// CH11
 #define LBR_CHR '{'		// CH12
 #define RBR_CHR '}'		// CH13
+#define SCP_CHR ':'		// CH14
+#define OAB_CHR '['		// CH15
+#define CAB_CHR ']'		// CH16
+#define PRD_CHR '.'		// CH17
+#define AQT_CHR '"'		// CH18
+
+
+
 
 /*  Special case tokens processed separately one by one in the token-driven part of the scanner:
  *  LPR_T, RPR_T, LBR_T, RBR_T, EOS_T, SEOF_T and special chars used for tokenis include _, & and ' */
@@ -180,45 +190,67 @@ typedef struct scannerData {
 #define ESWR	9		/* Error state with retract */
 #define FS		10		/* Illegal state */
 
- /* TO_DO: State transition table definition */
-#define NUM_STATES		10
-#define CHAR_CLASSES	8
-
-/* TO_DO: Transition table - type of states defined in separate table */
-static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,    &,   \', SEOF,    #, other
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6),  O(7) */
-	{     1, ESNR, ESNR, ESNR,    4, ESWR,	  6, ESNR},	// S0: NOAS
-	{     1,    1,    1,    2,	  3,    3,   3,    3},	// S1: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S2: ASNR (MVID)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S3: ASWR (KEY)
-	{     4,    4,    4,    4,    5, ESWR,	  4,    4},	// S4: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S5: ASNR (SL)
-	{     6,    6,    6,    6,    6, ESWR,	  7,    6},	// S6: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S7: ASNR (COM)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S8: ASNR (ES)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS}  // S9: ASWR (ER)
-};
-
 /* Define accepting states types */
 #define NOFS	0		/* not accepting state */
 #define FSNR	1		/* accepting state with no retract */
 #define FSWR	2		/* accepting state with retract */
 
+
+ /* TO_DO: State transition table definition */
+#define NUM_STATES		19
+#define CHAR_CLASSES	10
+
+/* TO_DO: Transition table - type of states defined in separate table */
+static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
+/*    [A-z],[0-9],    _,    &,   \', SEOF,    #, other
+	   L(0), D(1), U(2), K(3), H(4), Q(5), [a-z](7) , F(8), Bo(9), O(10) */
+	{  ESNR,   13, ESNR,   11,	 18,	4,         1, ESNR  ,ESNR,	ESNR},	// S0: NOAS
+	{     1,    1,    1,   2,	 2,		2,	       1,	 2 ,	3,	ESNR},	// S1: NOAS
+	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S2: ASNR (VARID|KEY)
+	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S3: ASWR (FUNCID)
+	{     4,    4,    4,    4,    4,    5,         4,     4,     4,    4},	// S4: NOAS
+	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR, 	    ESNR,  ESNR,  ESNR,	ESNR},	// S5: NOAR 
+	{     6,    6,    6,    6,    6,    7,         6,     6,     6,    6},	// S6: NOAS
+	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S7: NOAR
+	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S8: NOAR
+	{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},  // S9: ASWR (COM)
+	
+	{    11,   11,   11,  12,	 11,   11,	  	  11,	 11,	11,	  11},	// S11: NOAS
+	{ FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},	// S12: ASNR (SL)
+	{    17,   13,   17,   17,	 17,   17,	  	  17,	 14,	17,	ESNR},	// S13: NOAR 
+	{  ESNR,   15, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S14: NOAS
+	{    16,   15,   16,   16,	 16,   16,	  	  16,	 16,	16,	ESNR},	// S15: NOAR
+	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S16: ASNR (FLOAT)
+	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S17: ASNR (INT)
+	{    18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR 
+	{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR}  // S19: ASWR (SCOM)
+};
+
+
 /* TO_DO: Define list of acceptable states */
 static lp_intg stateType[NUM_STATES] = {
 	NOFS, /* 00 */
 	NOFS, /* 01 */
-	FSNR, /* 02 (MID) - Methods */
-	FSWR, /* 03 (KEY) */
+	FSNR, /* 02 (KEY/VAR) - Methods */
+	FSWR, /* 03 (MID) */
 	NOFS, /* 04 */
-	FSNR, /* 05 (SL) */
+	NOFS, /* 05  */
 	NOFS, /* 06 */
-	FSNR, /* 07 (COM) */
-	FSNR, /* 08 (Err1 - no retract) */
-	FSWR  /* 09 (Err2 - retract) */
-};
+	NOFS, /* 07 (*/
+	NOFS, /* 08  */
+	FSWR, /* 09 (COM)*/
+	
+	NOFS, /* 11 */
+	FSNR, /* 12 (SL)  */
+	NOFS, /* 13  */
+	NOFS, /* 14 */
+	NOFS, /* 15  */
+	FSNR, /* 16 (FLOAT)*/
+	FSNR, /* 17 (INT) */
+	NOFS, /* 18 */
+	FSNR /* 19 (SCOM) */
 
+};
 /*
 -------------------------------------------------
 TO_DO: Adjust your functions'definitions
@@ -258,14 +290,25 @@ Token funcErr	(lp_string lexeme);
 static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	NULL,		/* -    [00] */
 	NULL,		/* -    [01] */
-	funcID,		/* MNID	[02] */
-	funcKEY,	/* KEY  [03] */
+	funcKEY,		/* MNID	[02] */
+	funcID ,	/* KEY  [03] */
 	NULL,		/* -    [04] */
-	funcSL,		/* SL   [05] */
+	NULL,		/* SL   [05] */
 	NULL,		/* -    [06] */
-	funcCMT,	/* COM  [07] */
-	funcErr,	/* ERR1 [06] */
-	funcErr		/* ERR2 [07] */
+	NULL,	/* COM  [07] */
+	NULL,	/* ERR1 [08] */
+	funcCMT,		/* -    [09] */
+	NULL,		/* MNID	[11] */
+	funcSL,	/* KEY  [12] */
+	NULL,		/* -    [13] */
+	NULL,		/* -    [14] */
+	NULL,		/* SL   [15] */
+	funcIL,		/* -    [16] */
+	funcIL,	/* COM  [17] */
+	NULL,   /* ERR1 [18] */
+	funcCMT 	/* ERR2 [19] */
+	
+	
 };
 
 /*
@@ -275,7 +318,7 @@ Language keywords
 */
 
 /* TO_DO: Define the number of Keywords from the language */
-#define KWT_SIZE 11
+#define KWT_SIZE 20
 
 /* TO_DO: Define the list of keywords */
 static lp_string keywordTable[KWT_SIZE] = {
@@ -289,7 +332,18 @@ static lp_string keywordTable[KWT_SIZE] = {
 	"else",		/* KW07 */
 	"while",	/* KW08 */
 	"do",		/* KW09 */
-	"return"	/* KW10 */
+	"return",	/* KW10 */
+	"def",	    /* KW11 */
+	"for",	   /* KW12 */
+	"true",	/* KW13 */
+	"false",	/* KW14 */
+	"break",	/* KW15 */
+	"elif",	/* KW16 */
+    "continue",	/* KW17 */
+	"finaly",	/* KW18 */
+	"print"	/* KW19 */
+
+	
 };
 
 /* NEW SECTION: About indentation */

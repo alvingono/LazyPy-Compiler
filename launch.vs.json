@@ -8,9 +8,9 @@
         "projectTarget": "LazyPy.exe",
         "name": "LazyPy.exe",
         "args": [
-            "1",
-            "README.lp",
-                "a"
+            "2",
+            "README.lp"
+               // "a"
         ]
     }
   ]
