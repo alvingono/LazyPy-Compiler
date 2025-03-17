@@ -114,8 +114,9 @@ static BufferPointer sourceBuffer;			/* Pointer to input source buffer */
 
 lp_intg startScanner(BufferPointer psc_buf) {
 	/* TO_DO: Start histogram */
-	for (lp_intg i=0; i<NUM_TOKENS;i++)
+	for (lp_intg i = 0; i < NUM_TOKENS;i++) {
 		scData.scanHistogram[i] = 0;
+	}
 	/* Basic scanner initialization */
 	/* in case the buffer has been read previously  */
 	readerRecover(psc_buf);
@@ -509,7 +510,9 @@ Token funcKEY(lp_string lexeme) {
 		currentToken.attribute.codeType = kwindex;
 	}
 	else {
-		currentToken = funcErr(lexeme);
+		currentToken.code = VID_T;
+		scData.scanHistogram[currentToken.code]++;
+		
 	}
 	return currentToken;
 }
@@ -546,6 +549,27 @@ Token funcErr(lp_string lexeme) {
 	return currentToken;
 }
 
+Token funcFL(lp_string lexeme)
+{
+	Token currentToken = { 0 };
+	lp_real tlong;
+	if (lexeme[0] != EOS_CHR && strlen(lexeme) > NUM_LEN) {
+		currentToken = (*finalStateTable[ESNR])(lexeme);
+	}
+	else {
+		tlong = atol(lexeme);
+		if (tlong >= 0 && tlong <= SHRT_MAX) {
+			currentToken.code = FLT_T;
+			scData.scanHistogram[currentToken.code]++;
+			currentToken.attribute.floatValue = (lp_real)tlong;
+		}
+		else {
+			currentToken = (*finalStateTable[ESNR])(lexeme);
+		}
+	}
+	return currentToken;
+}
+
 
 /*
  ************************************************************
@@ -574,6 +598,15 @@ lp_void printToken(Token t) {
 	case MNID_T:
 		printf("MNID_T\t\t%s\n", t.attribute.idLexeme);
 		break;
+	case VID_T:
+		printf("MNID_T\t\t%s\n", t.attribute.idLexeme);
+		break;
+	case FLT_T:
+		printf("FLT_T\t\t%f\n", t.attribute.floatValue);
+		break;
+	case INL_T:
+		printf("FLT_T\t\t%d\n", t.attribute.intValue);
+		break;
 	case STR_T:
 		printf("STR_T\t\t%d\t ", (lp_intg)t.attribute.codeType);
 		printf("%s\n", readerGetContent(stringLiteralTable, (lp_intg)t.attribute.codeType));
@@ -594,7 +627,7 @@ lp_void printToken(Token t) {
 		printf("KW_T\t\t%s\n", keywordTable[t.attribute.codeType]);
 		break;
 	case CMT_T:
-		printf("CMT_T\n");
+		printf("CMT_T\t\t'%s'\n", t.attribute.idLexeme);
 		break;
 	case EOS_T:
 		printf("EOS_T\n");

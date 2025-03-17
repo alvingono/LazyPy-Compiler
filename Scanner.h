@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 14
+#define NUM_TOKENS 15
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -90,7 +90,8 @@ enum TOKENS {
 	RTE_T,		/* 10: Run-time error token */
 	SEOF_T,		/* 11: Source end-of-file token */
 	CMT_T,		/* 12: Comment token */
-	FLT_T		/* 13: FLOAT literal token */
+	FLT_T,		/* 13: FLOAT literal token */
+	VID_T		/* 13: FLOAT literal token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -202,28 +203,28 @@ typedef struct scannerData {
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,    &,   \', SEOF,    #, other
+/*    [A-z],[0-9],    _,    ",   #,    ',     ,        . ,   (,    other
 	   L(0), D(1), U(2), K(3), H(4), Q(5), [a-z](7) , F(8), Bo(9), O(10) */
 	{  ESNR,   13, ESNR,   11,	 18,	4,         1, ESNR  ,ESNR,	ESNR},	// S0: NOAS
 	{     1,    1,    1,   2,	 2,		2,	       1,	 2 ,	3,	ESNR},	// S1: NOAS
-	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S2: ASNR (VARID|KEY)
-	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S3: ASWR (FUNCID)
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S2: ASNR (VARID|KEY)
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S3: ASWR (FUNCID)
 	{     4,    4,    4,    4,    4,    5,         4,     4,     4,    4},	// S4: NOAS
-	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR, 	    ESNR,  ESNR,  ESNR,	ESNR},	// S5: NOAR 
+	{  ESNR, ESNR, ESNR, ESNR, ESNR,    6, 	    ESNR,  ESNR,  ESNR,	ESNR},	// S5: NOAR 
 	{     6,    6,    6,    6,    6,    7,         6,     6,     6,    6},	// S6: NOAS
-	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S7: NOAR
-	{  ESNR, ESNR, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S8: NOAR
-	{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},  // S9: ASWR (COM)
-	
+	{  ESNR, ESNR, ESNR, ESNR, ESNR,    8,      ESNR,  ESNR,  ESNR,	ESNR},	// S7: NOAR
+	{  ESNR, ESNR, ESNR, ESNR, ESNR,    9,      ESNR,  ESNR,  ESNR,	ESNR},	// S8: NOAR
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},  // S9: ASWR (COM)
+	//{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},  // S10: ASWR (SCOM)
 	{    11,   11,   11,  12,	 11,   11,	  	  11,	 11,	11,	  11},	// S11: NOAS
-	{ FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},	// S12: ASNR (SL)
+	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S12: ASNR (SL)
 	{    17,   13,   17,   17,	 17,   17,	  	  17,	 14,	17,	ESNR},	// S13: NOAR 
 	{  ESNR,   15, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S14: NOAS
 	{    16,   15,   16,   16,	 16,   16,	  	  16,	 16,	16,	ESNR},	// S15: NOAR
-	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S16: ASNR (FLOAT)
-	{  FSWR, FSWR, FSWR, FSWR, FSWR, FSWR,      FSWR,  FSWR,  FSWR,	FSWR},	// S17: ASNR (INT)
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S16: ASNR (FLOAT)
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S17: ASNR (INT)
 	{    18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR 
-	{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR}  // S19: ASWR (SCOM)
+	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS}  // S19: ASWR (SCOM)
 };
 
 
@@ -231,22 +232,22 @@ static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
 static lp_intg stateType[NUM_STATES] = {
 	NOFS, /* 00 */
 	NOFS, /* 01 */
-	FSNR, /* 02 (KEY/VAR) - Methods */
+	FSWR, /* 02 (KEY/VAR) - Methods */
 	FSWR, /* 03 (MID) */
 	NOFS, /* 04 */
 	NOFS, /* 05  */
 	NOFS, /* 06 */
 	NOFS, /* 07 (*/
 	NOFS, /* 08  */
-	FSWR, /* 09 (COM)*/
+	FSNR, /* 09 (COM)*/
 	
 	NOFS, /* 11 */
 	FSNR, /* 12 (SL)  */
 	NOFS, /* 13  */
 	NOFS, /* 14 */
 	NOFS, /* 15  */
-	FSNR, /* 16 (FLOAT)*/
-	FSNR, /* 17 (INT) */
+	FSWR, /* 16 (FLOAT)*/
+	FSWR, /* 17 (INT) */
 	NOFS, /* 18 */
 	FSNR /* 19 (SCOM) */
 
@@ -280,6 +281,10 @@ Token funcID	(lp_string lexeme);
 Token funcCMT   (lp_string lexeme);
 Token funcKEY	(lp_string lexeme);
 Token funcErr	(lp_string lexeme);
+Token funcFL   (lp_string lexeme);
+
+
+
 
 /* 
  * Accepting function (action) callback table (array) definition 
@@ -303,7 +308,7 @@ static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	NULL,		/* -    [13] */
 	NULL,		/* -    [14] */
 	NULL,		/* SL   [15] */
-	funcIL,		/* -    [16] */
+	funcFL,		/* -    [16] */
 	funcIL,	/* COM  [17] */
 	NULL,   /* ERR1 [18] */
 	funcCMT 	/* ERR2 [19] */
