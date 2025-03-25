@@ -367,9 +367,9 @@ typedef struct languageAttributes {
 } LanguageAttributes;
 
 /* Number of errors */
-lp_intg numScannerErrors;
+extern lp_intg numScannerErrors;
 
 /* Scanner data */
-ScannerData scData;
+extern ScannerData scData;
 
 #endif

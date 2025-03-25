@@ -160,7 +160,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 	lp_char tempChar = ' ';
 	/* TO_DO: Defensive programming */
 	if (!readerPointer)
-		return LP_ERROR;
+		return (BufferPointer) LP_ERROR;
 	/* TO_DO: Reset Realocation */
 	readerPointer->flags.isMoved = LP_FALSE;
 	/* TO_DO: Test the inclusion of chars */
@@ -177,7 +177,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Update the last position with Terminator */
 			readerPointer->content[readerPointer->positions.wrte++] = READER_TERMINATOR;
 			
-			return LP_ERROR;
+			return (BufferPointer) LP_ERROR;
 			break;
 		case MODE_ADDIT:
 			/* TO_DO: Update size for Additive mode */
@@ -186,7 +186,7 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Defensive programming */
 			if (newSize < readerPointer->size) {
 				readerPointer->flags.isFull = LP_TRUE;
-				return LP_ERROR;
+				return (BufferPointer) LP_ERROR;
 			}
 			break;
 		case MODE_MULTI:
@@ -195,18 +195,18 @@ BufferPointer readerAddChar(BufferPointer readerPointer, lp_char ch) {
 			/* TO_DO: Defensive programming */
 			if (newSize < readerPointer->size) {
 				readerPointer->flags.isFull = LP_TRUE;
-				return LP_ERROR;
+				return (BufferPointer) LP_ERROR;
 			}
 			break;
 		default:
-			return LP_ERROR;
+			return (BufferPointer) LP_ERROR;
 		}
 		/* TO_DO: Reallocate */
 		tempReader = realloc(readerPointer->content, newSize);
 
 		/* TO_DO: Defensive programming */
 		if (!tempReader) {
-			return LP_ERROR;
+			return (BufferPointer) LP_ERROR;
 		}
 		readerPointer->content = tempReader;
 		readerPointer->size = newSize;
@@ -699,12 +699,12 @@ lp_intg readerGetInc(BufferPointer const readerPointer) {
 *************************************************************
 */
 lp_char readerGetMode(BufferPointer const readerPointer) {
-	/* TO_DO: Defensive programming */
-	if (!readerPointer)
-		return LP_INVALID;
+    /* TO_DO: Defensive programming */
+    if (!readerPointer)
+        return (lp_char) '\0';  // Return a null character
 
-	/* TO_DO: Return mode */
-	return readerPointer->mode;
+    /* TO_DO: Return mode */
+    return readerPointer->mode;
 }
 
 /*

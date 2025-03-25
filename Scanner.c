@@ -82,6 +82,9 @@
 #include "Scanner.h"
 #endif
 
+int numScannerErrors = 0;
+ScannerData scData;
+
 /*
 ----------------------------------------------------------------
 TO_DO: Global vars definitions
