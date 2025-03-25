@@ -159,6 +159,7 @@ Token tokenizer(lp_void) {
 	lexeme = (lp_string)malloc(VID_LEN * sizeof(lp_char));
 	if (!lexeme)
 		return currentToken;
+    // check rn
 	lexeme[0] = EOS_CHR;
 
 	while (1) { /* endless loop broken by token returns it will generate a warning */
