@@ -391,18 +391,49 @@ Token tokenizer(lp_void) {
 
             // we check what the next character is to determine what type of comparison operator it is
             c = readerGetChar(sourceBuffer);
-            switch (c) {
-                case EQL_CHR:
-                    // we have a "<=" character
-                    currentToken.code = CMP_T;
-                    currentToken.attribute.relationalOperator = OP_LTE;
-                    scData.scanHistogram[currentToken.code]++;
+            if (c == EQL_CHR) {
+                // we have a "<=" character
+                currentToken.code = CMP_T;
+                currentToken.attribute.relationalOperator = OP_LTE;
+                scData.scanHistogram[currentToken.code]++;
 
-                    // retract the buffer to the original position
+                // retract the buffer to the original position
+                readerRetract(sourceBuffer);
+
+                // keep reading to see what's getting compared
+                // loop until we reach a new line character or until a semicolon ":"
+
+                int innerSize = 0;
+                while ((c = readerGetChar(sourceBuffer)) != SCP_CHR) {
+                    // if we reach a new line character then we have reached the end of the comparison
+                    if (c == NWL_CHR) {
+                        readerRetract(sourceBuffer);
+                        break;
+                    }
+                    innerSize++;
+                }
+
+                // go back to original position before the comparison
+                for (int y = 0; y < innerSize + 2; y++) {
                     readerRetract(sourceBuffer);
+                }
+                lexemeBuffer = readerCreate(innerSize + 1, 0, MODE_FIXED);
+                // Process the comparison until the end of the comparison or file
+                while ((c = readerGetChar(sourceBuffer)) != SCP_CHR) {
+                    // add the character to the lexeme buffer
+                    readerAddChar(lexemeBuffer, c);
+                }
+                // allocate space for the lexeme string
+                lexeme = (lp_string)malloc((innerSize + 1) * sizeof(lp_char));
+                strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+                strncpy(currentToken.attribute.idLexeme, lexeme, VID_LEN);
+                currentToken.attribute.idLexeme[VID_LEN] = EOS_CHR;
+                currentToken.attribute.relationalOperator = OP_LTE;
 
-                    return currentToken;
+                free (lexeme);
+                return currentToken;
             }
+
 
             return currentToken;
 
@@ -847,10 +878,9 @@ lp_void printToken(Token t) {
         printf("ASG_T\t\t= VALUES: %s\n", t.attribute.idLexeme);
         break;
     case CMP_T:
-        printf("CMP_T\t\t==\n");
         switch (t.attribute.relationalOperator) {
             case OP_LTE:
-                printf("CMP_T\t\t<=\n");
+                printf("CMP_T\t\t%s\n", t.attribute.idLexeme);
                 break;
             default:
                 printf("CMP_T\t\t==\n");
