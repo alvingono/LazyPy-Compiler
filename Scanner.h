@@ -239,7 +239,7 @@ static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
 	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S17: ASNR (INT)
 	{   18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR
 	{   18,   18,   18,   18,   FS,   18,        18,    18,    18,	  18}, // S19: ASWR (SCOM)
-    {   19,   13, ESNR,   11,  18,     4,         1,     2,     3, ESNR},  // S19: first char capture
+    {   19,   13, ESNR,   11,  18,     4,         1,     2,     3,    2},  // S19: first char capture
 };
 
 
