@@ -211,6 +211,38 @@ Token tokenizer(lp_void) {
             } else {
                 currentToken.code = ASG_T;
                 scData.scanHistogram[currentToken.code]++;
+                // we have a assignment operator now we check what exactly is being assigned
+
+                // loop until we reach a new line character
+                int innerSize = 0;
+                while ((c = readerGetChar(sourceBuffer)) != NWL_CHR) {
+                    // if we reach a new line character then we have reached the end of the assignment
+                    if (c == NWL_CHR) {
+                        readerRetract(sourceBuffer);
+                        break;
+                    }
+                    innerSize++;
+                }
+                // go back to original position before the assignment
+                for (int y = 0; y < innerSize + 1; y++) {
+                    readerRetract(sourceBuffer);
+                }
+                lexemeBuffer = readerCreate(innerSize + 1, 0, MODE_FIXED);
+                // Process the assignment until the end of the assignment or file
+                while ((c = readerGetChar(sourceBuffer)) != NWL_CHR) {
+                    // add the character to the lexeme buffer
+                    readerAddChar(lexemeBuffer, c);
+                }
+                // allocate space for the lexeme string
+                lexeme = (lp_string)malloc(innerSize * sizeof(lp_char));
+                // move the contents of the lexeme buffer to the lexeme string to save token contents
+                strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+                // free the lexeme buffer
+                readerFree(lexemeBuffer);
+                // Set the assignment in the token's attribute
+                strncpy(currentToken.attribute.idLexeme, lexeme, innerSize + 1);
+                currentToken.attribute.idLexeme[innerSize + 1] = EOS_CHR;
+
                 return currentToken;
             }
 
@@ -350,6 +382,28 @@ Token tokenizer(lp_void) {
             // we have a ":" character
             currentToken.code = SMC_T;
             scData.scanHistogram[currentToken.code]++;
+            return currentToken;
+
+        case LTH_CHR:
+            // we have a "<" character
+            currentToken.code = CMP_T;
+            scData.scanHistogram[currentToken.code]++;
+
+            // we check what the next character is to determine what type of comparison operator it is
+            c = readerGetChar(sourceBuffer);
+            switch (c) {
+                case EQL_CHR:
+                    // we have a "<=" character
+                    currentToken.code = CMP_T;
+                    currentToken.attribute.relationalOperator = OP_LTE;
+                    scData.scanHistogram[currentToken.code]++;
+
+                    // retract the buffer to the original position
+                    readerRetract(sourceBuffer);
+
+                    return currentToken;
+            }
+
             return currentToken;
 
         case HST_CHR: // Handle comment character
@@ -790,16 +844,24 @@ lp_void printToken(Token t) {
         printf("SMC_T\t\t:\n");
         break;
     case ASG_T:
-        printf("ASG_T\t\t=\n");
+        printf("ASG_T\t\t= VALUES: %s\n", t.attribute.idLexeme);
         break;
     case CMP_T:
         printf("CMP_T\t\t==\n");
+        switch (t.attribute.relationalOperator) {
+            case OP_LTE:
+                printf("CMP_T\t\t<=\n");
+                break;
+            default:
+                printf("CMP_T\t\t==\n");
+                break;
+        }
         break;
 	case MNID_T:
 		printf("MNID_T\t\t%s\n", t.attribute.idLexeme);
 		break;
 	case VID_T:
-		printf("MNID_T\t\t%s\n", t.attribute.idLexeme);
+		printf("VID_T\t\t%s\n", t.attribute.idLexeme);
 		break;
 	case FLT_T:
 		printf("FLT_T\t\t%f\n", t.attribute.floatValue);

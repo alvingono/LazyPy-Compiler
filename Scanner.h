@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 19
+#define NUM_TOKENS 20
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -95,7 +95,8 @@ enum TOKENS {
     SMC_T,      /* 14: Semicolon token */
     SPL_VAR_T,  /* 15: Special variable token */
     CMP_T,      /* 16: Comparison token */
-    ASG_T       /* 17: Assignment token */
+    ASG_T,      /* 17: Assignment token */
+    ASG_VAL_T   /* 18: Assignment value token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -117,12 +118,13 @@ static lp_string tokenStrTable[NUM_TOKENS] = {
     "SMC_T",    // 14
     "ASG_T",    // 15
     "CMP_T",    // 16
-    "SPL_VAR_T" // 17
+    "SPL_VAR_T", // 17
+    "ASG_VAL_T" // 18
 };
 
 /* TO_DO: Operators token attributes */
 typedef enum ArithmeticOperators { OP_ADD, OP_SUB, OP_MUL, OP_DIV , OP_MOD} AriOperator;
-typedef enum RelationalOperators { OP_EQ, OP_NE, OP_GT, OP_LT } RelOperator;
+typedef enum RelationalOperators { OP_EQ, OP_NE, OP_GT, OP_LT, OP_GTE, OP_LTE } RelOperator;
 typedef enum LogicalOperators { OP_AND, OP_OR, OP_NOT } LogOperator;
 typedef enum SourceEndOfFile { SEOF_0, SEOF_255 } EofOperator;
 
@@ -188,6 +190,8 @@ typedef struct scannerData {
 #define AQT_CHR '"'		// CH18
 #define SPC_CHR ' '		// CH19
 #define EQL_CHR '='		// CH20
+#define LTH_CHR '<'	    // CH21
+#define GTH_CHR '>'	    // CH22
 
 
 
@@ -213,7 +217,7 @@ typedef struct scannerData {
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*            [A-z],    [0-9],        _,        ",        #,        ',              ,         .,         (,    other
+/*            [A-z],    [0-9],        _,        ",        #,        ',           " ",         .,         (,    other
                L(0),     D(1),     U(2),     K(3),     H(4),     Q(5),      [a-z](7),      F(8),     Bo(9),    O(10) */
     {     19,   13, ESNR,   11,  18,  4,           1,  FSWR,  ESNR, ESNR},  // S0: NOAS
 	{     1,    1,    1,    2,	  2,	2,	       1,	  2,	 3,	ESNR},	// S1: NOAS
@@ -235,7 +239,7 @@ static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
 	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S17: ASNR (INT)
 	{   18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR
 	{   18,   18,   18,   18,   FS,   18,        18,    18,    18,	  18}, // S19: ASWR (SCOM)
-    {   19,   13, ESNR,   11,  18,     4,         1,  FSWR,     3, ESNR},  // S19: first char capture
+    {   19,   13, ESNR,   11,  18,     4,         1,     2,     3, ESNR},  // S19: first char capture
 };
 
 
@@ -306,8 +310,8 @@ Token funcFL   (lp_string lexeme);
 static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	NULL,		/* -    [00] */
 	NULL,		/* -    [01] */
-	funcKEY,		/* MNID	[02] */
-	funcID ,	/* KEY  [03] */
+	funcID,		/* MNID	[02] */
+	funcKEY,	/* KEY  [03] */
 	NULL,		/* -    [04] */
 	NULL,		/* SL   [05] */
 	NULL,		/* -    [06] */

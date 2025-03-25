@@ -2,12 +2,12 @@
 # Testing numbers (e.g., factorial) #
 
 def main():
-    # Data section
+    # Data section #
     i = 1
     n = 0
     f = 1
     
-    # Code section
+    # Code section #
     print('Write a number:')
     n = int(input())
     
