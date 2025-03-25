@@ -73,12 +73,12 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 15
+#define NUM_TOKENS 19
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
 	ERR_T,		/*  0: Error token */
-	MNID_T,		/*  1: Method name identifier token (start: &) */
+	MNID_T,		/*  1: Method name identifier token */
 	INL_T,		/*  2: Integer literal token */
 	STR_T,		/*  3: String literal token */
 	LPR_T,		/*  4: Left parenthesis token */
@@ -91,25 +91,33 @@ enum TOKENS {
 	SEOF_T,		/* 11: Source end-of-file token */
 	CMT_T,		/* 12: Comment token */
 	FLT_T,		/* 13: FLOAT literal token */
-	VID_T		/* 13: FLOAT literal token */
+	VID_T,		/* 13: FLOAT literal token */
+    SMC_T,      /* 14: Semicolon token */
+    SPL_VAR_T,  /* 15: Special variable token */
+    CMP_T,      /* 16: Comparison token */
+    ASG_T       /* 17: Assignment token */
 };
 
 /* TO_DO: Define the list of keywords */
 static lp_string tokenStrTable[NUM_TOKENS] = {
-	"ERR_T",
-	"MNID_T",
-	"INL_T",
-	"STR_T",
-	"LPR_T",
-	"RPR_T",
-	"LBR_T",
-	"RBR_T",
-	"KW_T",
-	"EOS_T",
-	"RTE_T",
-	"SEOF_T",
-	"CMT_T",
-	"FLT_T"
+    "ERR_T",    // 0
+    "SEOF_T",   // 1
+    "VID_T",    // 2
+    "MNID_T",   // 3
+    "STR_T",    // 4
+    "FLT_T",    // 5
+    "INL_T",    // 6
+    "KW_T",     // 7
+    "LPR_T",    // 8
+    "RPR_T",    // 9
+    "LBR_T",    // 10
+    "RBR_T",    // 11
+    "EOS_T",    // 12
+    "CMT_T",    // 13
+    "SMC_T",    // 14
+    "ASG_T",    // 15
+    "CMP_T",    // 16
+    "SPL_VAR_T" // 17
 };
 
 /* TO_DO: Operators token attributes */
@@ -160,7 +168,7 @@ typedef struct scannerData {
 /* TO_DO: Define lexeme FIXED classes */
 /* EOF definitions */
 #define EOS_CHR '\0'	// CH00
-#define EOF_CHR 0xFF	// CH01
+#define EOF_CHR (-1)	// CH01 we are dealing with octal, so C sees it as -1
 #define UND_CHR '_'		// CH02
 #define AMP_CHR '&'		// CH03
 #define QUT_CHR '\''	// CH04
@@ -178,6 +186,8 @@ typedef struct scannerData {
 #define CAB_CHR ']'		// CH16
 #define PRD_CHR '.'		// CH17
 #define AQT_CHR '"'		// CH18
+#define SPC_CHR ' '		// CH19
+#define EQL_CHR '='		// CH20
 
 
 
@@ -198,33 +208,34 @@ typedef struct scannerData {
 
 
  /* TO_DO: State transition table definition */
-#define NUM_STATES		19
+#define NUM_STATES		20
 #define CHAR_CLASSES	10
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static lp_intg transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,    ",   #,    ',     ,        . ,   (,    other
-	   L(0), D(1), U(2), K(3), H(4), Q(5), [a-z](7) , F(8), Bo(9), O(10) */
-	{  ESNR,   13, ESNR,   11,	 18,	4,         1, ESNR  ,ESNR,	ESNR},	// S0: NOAS
-	{     1,    1,    1,   2,	 2,		2,	       1,	 2 ,	3,	ESNR},	// S1: NOAS
+/*            [A-z],    [0-9],        _,        ",        #,        ',              ,         .,         (,    other
+               L(0),     D(1),     U(2),     K(3),     H(4),     Q(5),      [a-z](7),      F(8),     Bo(9),    O(10) */
+    {     19,   13, ESNR,   11,  18,  4,           1,  FSWR,  ESNR, ESNR},  // S0: NOAS
+	{     1,    1,    1,    2,	  2,	2,	       1,	  2,	 3,	ESNR},	// S1: NOAS
 	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S2: ASNR (VARID|KEY)
 	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S3: ASWR (FUNCID)
 	{     4,    4,    4,    4,    4,    5,         4,     4,     4,    4},	// S4: NOAS
-	{  ESNR, ESNR, ESNR, ESNR, ESNR,    6, 	    ESNR,  ESNR,  ESNR,	ESNR},	// S5: NOAR 
-	{     6,    6,    6,    6,    6,    7,         6,     6,     6,    6},	// S6: NOAS
-	{  ESNR, ESNR, ESNR, ESNR, ESNR,    8,      ESNR,  ESNR,  ESNR,	ESNR},	// S7: NOAR
-	{  ESNR, ESNR, ESNR, ESNR, ESNR,    9,      ESNR,  ESNR,  ESNR,	ESNR},	// S8: NOAR
-	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},  // S9: ASWR (COM)
+    {  ESNR, ESNR, ESNR, ESNR, ESNR,  9,        ESNR,  ESNR,  ESNR, ESNR},  // S5: NOAR
+	{  6,    6,    6,    6,    6,     7,           6,     6,     6,    6},	// S6: NOAS
+    {  ESNR, ESNR, ESNR, ESNR, ESNR,  8,        ESNR,  ESNR,  ESNR, ESNR},  // S7: NOAR
+    {  ESNR, ESNR, ESNR, ESNR, ESNR,  9,        ESNR,  ESNR,  ESNR, ESNR},  // S8: NOAR
+    {  ESNR, ESNR, ESNR, ESNR, ESNR,  9,        ESNR,  ESNR,  ESNR, ESNR},  // S9: ASWR (COM)
 	//{  FSNR, FSNR, FSNR, FSNR, FSNR, FSNR,      FSNR,  FSNR,  FSNR,	FSNR},  // S10: ASWR (SCOM)
-	{    11,   11,   11,  12,	 11,   11,	  	  11,	 11,	11,	  11},	// S11: NOAS
+	{   11,   11,   11,   12,	 11,   11,	  	  11,	 11,	11,	  11},	// S11: NOAS
 	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S12: ASNR (SL)
-	{    17,   13,   17,   17,	 17,   17,	  	  17,	 14,	17,	ESNR},	// S13: NOAR 
-	{  ESNR,   15, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S14: NOAS
-	{    16,   15,   16,   16,	 16,   16,	  	  16,	 16,	16,	ESNR},	// S15: NOAR
-	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S16: ASNR (FLOAT)
-	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S17: ASNR (INT)
-	{    18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR 
-	{    FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS}  // S19: ASWR (SCOM)
+	{   17,   13,   17,   17,	 17,   17,	  	  17,	 14,	17,	ESNR},	// S13: NOAR
+	{ ESNR,   15, ESNR, ESNR, ESNR, ESNR,      ESNR,  ESNR,  ESNR,	ESNR},	// S14: NOAS
+	{   16,   15,   16,   16,	 16,   16,	  	  16,	 16,	16,	ESNR},	// S15: NOAR
+	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S16: ASNR (FLOAT)
+	{   FS,   FS,   FS,   FS,   FS,   FS,        FS,    FS,    FS,	  FS},	// S17: ASNR (INT)
+	{   18,   18,   18,   18,	 19,   18,	 	  18,	 18,	18,	ESNR},	// S18: NOAR
+	{   18,   18,   18,   18,   FS,   18,        18,    18,    18,	  18}, // S19: ASWR (SCOM)
+    {   19,   13, ESNR,   11,  18,     4,         1,  FSWR,     3, ESNR},  // S19: first char capture
 };
 
 
@@ -240,7 +251,7 @@ static lp_intg stateType[NUM_STATES] = {
 	NOFS, /* 07 (*/
 	NOFS, /* 08  */
 	FSNR, /* 09 (COM)*/
-	
+
 	NOFS, /* 11 */
 	FSNR, /* 12 (SL)  */
 	NOFS, /* 13  */
@@ -249,7 +260,7 @@ static lp_intg stateType[NUM_STATES] = {
 	FSWR, /* 16 (FLOAT)*/
 	FSWR, /* 17 (INT) */
 	NOFS, /* 18 */
-	FSNR /* 19 (SCOM) */
+	NOFS /* 19 (SCOM) */
 
 };
 /*

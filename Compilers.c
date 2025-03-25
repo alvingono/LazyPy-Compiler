@@ -79,6 +79,7 @@
 */
 
 lp_intg main(int argc, char** argv) {
+    setbuf(stdout, NULL); // use for DEBUGGING, allows for live console output while debugging.
 	lp_intg i;
 	printLogo();
 	if (DEBUG) {

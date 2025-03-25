@@ -162,11 +162,19 @@ Token tokenizer(lp_void) {
 	lexeme[0] = EOS_CHR;
 
 	while (1) { /* endless loop broken by token returns it will generate a warning */
+        int size = 0;
 		c = readerGetChar(sourceBuffer);
 
 		// TO_DO: Defensive programming
-		if (c < 0 || c >= NCHAR)
-			return currentToken;
+		if (c < 0 || c >= NCHAR) {
+            if (c == EOF_CHR) {
+                currentToken.code = SEOF_T;
+                scData.scanHistogram[currentToken.code]++;
+                currentToken.attribute.seofType = SEOF_255;
+                return currentToken;
+            }
+            return currentToken;
+        }
 
 		/* ------------------------------------------------------------------------
 			Part 1: Implementation of token driven scanner.
@@ -190,6 +198,131 @@ Token tokenizer(lp_void) {
 			currentToken.code = EOS_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
+        case EQL_CHR:
+            // we have a "=" character
+            // check if its a assignment operator or a comparison operator
+            // if the next character is a "=" character then its a comparison operator
+            // otherwise its a assignment operator
+            c = readerGetChar(sourceBuffer);
+            if (c == EQL_CHR) {
+                currentToken.code = CMP_T;
+                scData.scanHistogram[currentToken.code]++;
+                return currentToken;
+            } else {
+                currentToken.code = ASG_T;
+                scData.scanHistogram[currentToken.code]++;
+                return currentToken;
+            }
+
+        case UND_CHR:
+            // we have an "_" character
+            // most case it will be __main__
+            // special identifiers like these require 2 underscores then the name
+            // proceed with caution
+            currentToken.code = SPL_VAR_T;
+            scData.scanHistogram[currentToken.code]++;
+            size = 0;
+
+            // dynamically allocate a buffer to store the identifier
+            // traverses the buffer until the next space character
+            while ((c = readerGetChar(sourceBuffer)) != SPC_CHR) {
+                size++;
+            }
+
+            // go back to original position before the identifier
+            for (int y = 0; y < size + 2; y++) {
+                readerRetract(sourceBuffer);
+            }
+            lexemeBuffer = readerCreate(size + 1, 0, MODE_FIXED);
+            // Process the identifier until the end of the identifier or file
+            while ((c = readerGetChar(sourceBuffer)) != SPC_CHR) {
+                // add the character to the lexeme buffer
+                readerAddChar(lexemeBuffer, c);
+            }
+            // allocate space for the lexeme string
+            lexeme = (lp_string)malloc(size * sizeof(lp_char));
+            // move the contents of the lexeme buffer to the lexeme string to save token contents
+            strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+            // free the lexeme buffer
+            readerFree(lexemeBuffer);
+            // Set the identifier in the token's attribute
+            strncpy(currentToken.attribute.idLexeme, lexeme, size + 1);
+            currentToken.attribute.idLexeme[size + 1] = EOS_CHR;
+
+            return currentToken;
+        case AQT_CHR:
+            // we have a '"' character
+            currentToken.code = STR_T;
+            size = 0;
+            scData.scanHistogram[currentToken.code]++;
+            // dynamically allocate a buffer to store the string literal
+            // traverses the buffer until the next quote character
+            while ((c = readerGetChar(sourceBuffer)) != AQT_CHR) {
+                if (c == NWL_CHR) {
+                    line++;
+                }
+                size++;
+            }
+            // go back to original position before the string literal
+            for (int y = 0; y < size + 1; y++) {
+                readerRetract(sourceBuffer);
+            }
+            lexemeBuffer = readerCreate(size + 1, 0, MODE_FIXED);
+            // Process the string literal until the end of the string or file
+            while ((c = readerGetChar(sourceBuffer)) != AQT_CHR) {
+                // add the character to the lexeme buffer
+                readerAddChar(lexemeBuffer, c);
+                if (c == NWL_CHR) {
+                    line++;
+                }
+            }
+            // allocate space for the lexeme string
+            lexeme = (lp_string)malloc(size * sizeof(lp_char));
+            // move the contents of the lexeme buffer to the lexeme string to save token contents
+            strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+            // free the lexeme buffer
+            readerFree(lexemeBuffer);
+            // Set the string literal in the token's attribute
+            strncpy(currentToken.attribute.idLexeme, lexeme, size + 1);
+            currentToken.attribute.idLexeme[size + 1] = EOS_CHR;
+            return currentToken;
+        case QUT_CHR:
+            currentToken.code = STR_T;
+            size = 0;
+            scData.scanHistogram[currentToken.code]++;
+            // dynamically allocate a buffer to store the string literal
+            // traverses the buffer until the next quote character
+            while ((c = readerGetChar(sourceBuffer)) != QUT_CHR) {
+                if (c == NWL_CHR) {
+                    line++;
+                }
+                size++;
+            }
+
+            // go back to original position before the string literal
+            for (int y = 0; y < size + 1; y++) {
+                readerRetract(sourceBuffer);
+            }
+            lexemeBuffer = readerCreate(size + 1, 0, MODE_FIXED);
+            // Process the string literal until the end of the string or file
+            while ((c = readerGetChar(sourceBuffer)) != QUT_CHR) {
+                // add the character to the lexeme buffer
+                readerAddChar(lexemeBuffer, c);
+                if (c == NWL_CHR) {
+                    line++;
+                }
+            }
+            // allocate space for the lexeme string
+            lexeme = (lp_string)malloc(size * sizeof(lp_char));
+            // move the contents of the lexeme buffer to the lexeme string to save token contents
+            strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+            // free the lexeme buffer
+            readerFree(lexemeBuffer);
+            // Set the string literal in the token's attribute
+            strncpy(currentToken.attribute.idLexeme, lexeme, size + 1);
+            currentToken.attribute.idLexeme[size + 1] = EOS_CHR;
+
+            return currentToken;
 		case LPR_CHR:
 			currentToken.code = LPR_T;
 			scData.scanHistogram[currentToken.code]++;
@@ -212,6 +345,54 @@ Token tokenizer(lp_void) {
 			scData.scanHistogram[currentToken.code]++;
 			currentToken.attribute.seofType = SEOF_0;
 			return currentToken;
+
+        case SCP_CHR:
+            // we have a ":" character
+            currentToken.code = SMC_T;
+            scData.scanHistogram[currentToken.code]++;
+            return currentToken;
+
+        case HST_CHR: // Handle comment character
+            currentToken.code = CMT_T;
+            scData.scanHistogram[currentToken.code]++;
+            size = 0;
+            // dynamically allocate a buffer to store the comment text
+            // keep incrementing the length until we reach # or EOF
+
+            while ((c = readerGetChar(sourceBuffer)) != '#' && c != EOF_CHR) {
+                size++;
+                if (c == NWL_CHR) {
+                    line++;
+                }
+            }
+
+            // go back to original position before the comment
+            for (int y = 0; y < size; y++) {
+                readerRetract(sourceBuffer);
+            }
+            lexemeBuffer = readerCreate(size + 1, 0, MODE_FIXED);
+
+            // Process the comment until the end of the comment or file
+            while ((c = readerGetChar(sourceBuffer)) != '#' && c != EOF_CHR) {
+                // add the character to the lexeme buffer
+                readerAddChar(lexemeBuffer, c);
+                if (c == NWL_CHR) {
+                    line++;
+                }
+            }
+            // allocate space for the lexeme string
+            lexeme = (lp_string)malloc(size * sizeof(lp_char));
+
+            // move the contents of the lexeme buffer to the lexeme string to save token contents
+            strcpy(lexeme, readerGetContent(lexemeBuffer, 0));
+            // free the lexeme buffer
+            readerFree(lexemeBuffer);
+
+            // Set the comment text in the token's attribute
+            strncpy(currentToken.attribute.idLexeme, lexeme, size + 1);
+            currentToken.attribute.idLexeme[size + 1] = EOS_CHR;
+
+            return currentToken;
 		case EOF_CHR:
 			currentToken.code = SEOF_T;
 			scData.scanHistogram[currentToken.code]++;
@@ -245,9 +426,11 @@ Token tokenizer(lp_void) {
 				fprintf(stderr, "Scanner error: Can not create buffer\n");
 				exit(1);
 			}
+
 			readerRestore(sourceBuffer);
 			for (i = 0; i < lexLength; i++)
 				readerAddChar(lexemeBuffer, readerGetChar(sourceBuffer));
+
 			readerAddChar(lexemeBuffer, READER_TERMINATOR);
 			lexeme = readerGetContent(lexemeBuffer, 0);
 			// TO_DO: Defensive programming
@@ -323,6 +506,9 @@ lp_intg nextState(lp_intg state, lp_char c) {
 lp_intg nextClass(lp_char c) {
 	lp_intg val = -1;
 	switch (c) {
+    case SPC_CHR:
+        val = 7;
+        break;
 	case UND_CHR:
 		val = 2;
 		break;
@@ -514,6 +700,8 @@ Token funcKEY(lp_string lexeme) {
 	}
 	else {
 		currentToken.code = VID_T;
+        strncpy(currentToken.attribute.idLexeme, lexeme, VID_LEN);
+        currentToken.attribute.idLexeme[VID_LEN] = EOS_CHR;
 		scData.scanHistogram[currentToken.code]++;
 		
 	}
@@ -598,6 +786,15 @@ lp_void printToken(Token t) {
 	case SEOF_T:
 		printf("SEOF_T\t\t%d\t\n", t.attribute.seofType);
 		break;
+    case SMC_T:
+        printf("SMC_T\t\t:\n");
+        break;
+    case ASG_T:
+        printf("ASG_T\t\t=\n");
+        break;
+    case CMP_T:
+        printf("CMP_T\t\t==\n");
+        break;
 	case MNID_T:
 		printf("MNID_T\t\t%s\n", t.attribute.idLexeme);
 		break;
@@ -607,18 +804,20 @@ lp_void printToken(Token t) {
 	case FLT_T:
 		printf("FLT_T\t\t%f\n", t.attribute.floatValue);
 		break;
+    case SPL_VAR_T:
+        printf("SPL_VAR_T\t%s\n", t.attribute.idLexeme);
+        break;
 	case INL_T:
 		printf("FLT_T\t\t%d\n", t.attribute.intValue);
 		break;
 	case STR_T:
-		printf("STR_T\t\t%d\t ", (lp_intg)t.attribute.codeType);
-		printf("%s\n", readerGetContent(stringLiteralTable, (lp_intg)t.attribute.codeType));
+		printf("STR_T\t\t%s\n", t.attribute.idLexeme);
 		break;
 	case LPR_T:
-		printf("LPR_T\n");
+		printf("LPR_T\t\t(\n");
 		break;
 	case RPR_T:
-		printf("RPR_T\n");
+		printf("RPR_T\t\t)\n");
 		break;
 	case LBR_T:
 		printf("LBR_T\n");
