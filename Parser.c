@@ -64,9 +64,9 @@ extern ParserData psData; /* BNF statistics */
  */
 /* TO_DO: This is the function to start the parser - check your program definition */
 
-sofia_void startParser() {
+lp_void startParser() {
 	/* TO_DO: Initialize Parser data */
-	sofia_intg i = 0;
+	lp_intg i = 0;
 	for (i = 0; i < NUM_BNF_RULES; i++) {
 		psData.parsHistogram[i] = 0;
 	}
@@ -86,8 +86,8 @@ sofia_void startParser() {
  ***********************************************************
  */
 /* TO_DO: This is the main code for match - check your definition */
-sofia_void matchToken(sofia_intg tokenCode, sofia_intg tokenAttribute) {
-	sofia_intg matchFlag = 1;
+lp_void matchToken(lp_intg tokenCode, lp_intg tokenAttribute) {
+	lp_intg matchFlag = 1;
 	switch (lookahead.code) {
 	case KW_T:
 		if (lookahead.attribute.codeType != tokenAttribute)
@@ -116,7 +116,7 @@ sofia_void matchToken(sofia_intg tokenCode, sofia_intg tokenAttribute) {
  ***********************************************************
  */
 /* TO_DO: This is the function to handler error - adjust basically datatypes */
-sofia_void syncErrorHandler(sofia_intg syncTokenCode) {
+lp_void syncErrorHandler(lp_intg syncTokenCode) {
 	printError();
 	syntaxErrorNumber++;
 	while (lookahead.code != syncTokenCode) {
@@ -134,7 +134,7 @@ sofia_void syncErrorHandler(sofia_intg syncTokenCode) {
  ***********************************************************
  */
 /* TO_DO: This is the function to error printing - adjust basically datatypes */
-sofia_void printError() {
+lp_void printError() {
 	extern numParserErrors;			/* link to number of errors (defined in Parser.h) */
 	Token t = lookahead;
 	printf("%s%s%3d\n", STR_LANGNAME, ": Syntax error:  Line:", line);
@@ -183,7 +183,7 @@ sofia_void printError() {
  * FIRST(<program>)= {CMT_T, MNID_T (main&), SEOF_T}.
  ***********************************************************
  */
-sofia_void program() {
+lp_void program() {
 	/* Update program statistics */
 	psData.parsHistogram[BNF_program]++;
 	/* Program code */
@@ -220,7 +220,7 @@ sofia_void program() {
  * FIRST(<comment>)= {CMT_T}.
  ***********************************************************
  */
-sofia_void comment() {
+lp_void comment() {
 	psData.parsHistogram[BNF_comment]++;
 	matchToken(CMT_T, NO_ATTR);
 	printf("%s%s\n", STR_LANGNAME, ": Comment parsed");
@@ -233,7 +233,7 @@ sofia_void comment() {
  * FIRST(<program>)= {KW_T (KW_data)}.
  ***********************************************************
  */
-sofia_void dataSession() {
+lp_void dataSession() {
 	psData.parsHistogram[BNF_dataSession]++;
 	switch (lookahead.code) {
 	case CMT_T:
@@ -254,7 +254,7 @@ sofia_void dataSession() {
  * FIRST(<opt_varlist_declarations>) = { e, KW_T (KW_int), KW_T (KW_real), KW_T (KW_string)}.
  ***********************************************************
  */
-sofia_void optVarListDeclarations() {
+lp_void optVarListDeclarations() {
 	psData.parsHistogram[BNF_optVarListDeclarations]++;
 	switch (lookahead.code) {
 	default:
@@ -270,7 +270,7 @@ sofia_void optVarListDeclarations() {
  * FIRST(<codeSession>)= {KW_T (KW_code)}.
  ***********************************************************
  */
-sofia_void codeSession() {
+lp_void codeSession() {
 	psData.parsHistogram[BNF_codeSession]++;
 	switch (lookahead.code) {
 	case CMT_T:
@@ -294,7 +294,7 @@ sofia_void codeSession() {
  *				KW_T(KW_while), MNID_T(print&), MNID_T(input&) }
  ***********************************************************
  */
-sofia_void optionalStatements() {
+lp_void optionalStatements() {
 	psData.parsHistogram[BNF_optionalStatements]++;
 	switch (lookahead.code) {
 	case CMT_T:
@@ -319,7 +319,7 @@ sofia_void optionalStatements() {
  *		KW_T(KW_while), MNID_T(input&), MNID_T(print&) }
  ***********************************************************
  */
-sofia_void statements() {
+lp_void statements() {
 	psData.parsHistogram[BNF_statements]++;
 	statement();
 	statementsPrime();
@@ -334,7 +334,7 @@ sofia_void statements() {
  *		KW_T(KW_if), KW_T(KW_while), MNID_T(input&), MNID_T(print&) }
  ***********************************************************
  */
-sofia_void statementsPrime() {
+lp_void statementsPrime() {
 	psData.parsHistogram[BNF_statementsPrime]++;
 	switch (lookahead.code) {
 	case MNID_T:
@@ -356,7 +356,7 @@ sofia_void statementsPrime() {
  *			MNID_T(input&), MNID_T(print&) }
  ***********************************************************
  */
-sofia_void statement() {
+lp_void statement() {
 	psData.parsHistogram[BNF_statement]++;
 	switch (lookahead.code) {
 	case KW_T:
@@ -383,7 +383,7 @@ sofia_void statement() {
  * FIRST(<output statement>) = { MNID_T(print&) }
  ***********************************************************
  */
-sofia_void outputStatement() {
+lp_void outputStatement() {
 	psData.parsHistogram[BNF_outputStatement]++;
 	matchToken(MNID_T, NO_ATTR);
 	matchToken(LPR_T, NO_ATTR);
@@ -400,7 +400,7 @@ sofia_void outputStatement() {
  * FIRST(<opt_variable_list>) = { IVID_T, FVID_T, SVID_T, ϵ }
  ***********************************************************
  */
-sofia_void outputVariableList() {
+lp_void outputVariableList() {
 	psData.parsHistogram[BNF_outputVariableList]++;
 	switch (lookahead.code) {
 	case STR_T:
@@ -422,10 +422,10 @@ sofia_void outputVariableList() {
  ***********************************************************
  */
 /*
-sofia_void printBNFData(ParserData psData) {
+lp_void printBNFData(ParserData psData) {
 }
 */
-sofia_void printBNFData(ParserData psData) {
+lp_void printBNFData(ParserData psData) {
 	/* Print Parser statistics */
 	printf("Statistics:\n");
 	printf("----------------------------------\n");

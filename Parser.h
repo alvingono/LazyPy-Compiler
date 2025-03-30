@@ -66,10 +66,10 @@
 /* Global vars */
 static Token			lookahead;
 extern BufferPointer	stringLiteralTable;
-extern sofia_intg		line;
-extern Token			tokenizer(sofia_void);
-extern sofia_string		keywordTable[KWT_SIZE];
-static sofia_intg		syntaxErrorNumber = 0;
+extern lp_intg		line;
+extern Token			tokenizer(lp_void);
+extern lp_string		keywordTable[KWT_SIZE];
+static lp_intg		syntaxErrorNumber = 0;
 
 #define LANG_WRTE		"print&"
 #define LANG_READ		"input&"
@@ -97,21 +97,21 @@ enum KEYWORDS {
 
 /* Parser */
 typedef struct parserData {
-	sofia_intg parsHistogram[NUM_BNF_RULES];	/* Number of BNF Statements */
+	lp_intg parsHistogram[NUM_BNF_RULES];	/* Number of BNF Statements */
 } ParserData, * pParsData;
 
 /* Number of errors */
-sofia_intg numParserErrors;
+lp_intg numParserErrors;
 
 /* Scanner data */
 ParserData psData;
 
 /* Function definitions */
-sofia_void startParser();
-sofia_void matchToken(sofia_intg, sofia_intg);
-sofia_void syncErrorHandler(sofia_intg);
-sofia_void printError();
-sofia_void printBNFData(ParserData psData);
+lp_void startParser();
+lp_void matchToken(lp_intg, lp_intg);
+lp_void syncErrorHandler(lp_intg);
+lp_void printError();
+lp_void printBNFData(ParserData psData);
 
 /* List of BNF statements */
 enum BNF_RULES {
@@ -131,7 +131,7 @@ enum BNF_RULES {
 
 
 /* TO_DO: Define the list of keywords */
-static sofia_string BNFStrTable[NUM_BNF_RULES] = {
+static lp_string BNFStrTable[NUM_BNF_RULES] = {
 	"BNF_error",
 	"BNF_codeSession",
 	"BNF_comment",
@@ -147,16 +147,16 @@ static sofia_string BNFStrTable[NUM_BNF_RULES] = {
 };
 
 /* TO_DO: Place ALL non-terminal function declarations */
-sofia_void codeSession();
-sofia_void comment();
-sofia_void dataSession();
-sofia_void optVarListDeclarations();
-sofia_void optionalStatements();
-sofia_void outputStatement();
-sofia_void outputVariableList();
-sofia_void program();
-sofia_void statement();
-sofia_void statements();
-sofia_void statementsPrime();
+lp_void codeSession();
+lp_void comment();
+lp_void dataSession();
+lp_void optVarListDeclarations();
+lp_void optionalStatements();
+lp_void outputStatement();
+lp_void outputVariableList();
+lp_void program();
+lp_void statement();
+lp_void statements();
+lp_void statementsPrime();
 
 #endif

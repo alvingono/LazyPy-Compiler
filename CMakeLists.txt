@@ -24,7 +24,9 @@ add_executable (LazyPy
         "Scanner.c"
         "Scanner.h"
         "MainScanner.c"
-        #"Parser.h"		"Parser.c"		"MainParser.c"
+        "Parser.h"
+        "Parser.c"
+        "MainParser.c"
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
