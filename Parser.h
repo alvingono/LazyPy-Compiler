@@ -101,10 +101,10 @@ typedef struct parserData {
 } ParserData, * pParsData;
 
 /* Number of errors */
-lp_intg numParserErrors;
+extern lp_intg numParserErrors;
 
 /* Scanner data */
-ParserData psData;
+extern ParserData psData;
 
 /* Function definitions */
 lp_void startParser();

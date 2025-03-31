@@ -72,6 +72,44 @@ lp_void startParser() {
 	}
 	/* Proceed parser */
 	lookahead = tokenizer();
+    // debug
+    switch(lookahead.code) {
+        case CMT_T:
+            printf("CMT_T\n");
+            break;
+        case SEOF_T:
+            printf("SEOF_T\n");
+            break;
+        case ERR_T:
+            printf("ERR_T\n");
+            break;
+        case MNID_T:
+            printf("MNID_T\n");
+            break;
+        case STR_T:
+            printf("STR_T\n");
+            break;
+        case KW_T:
+            printf("KW_T\n");
+            break;
+        case LPR_T:
+            printf("LPR_T\n");
+            break;
+        case RPR_T:
+            printf("RPR_T\n");
+            break;
+        case LBR_T:
+            printf("LBR_T\n");
+            break;
+        case RBR_T:
+            printf("RBR_T\n");
+            break;
+        case EOS_T:
+            printf("EOS_T\n");
+            break;
+        default:
+            printf("Unknown\n");
+    }
 	if (lookahead.code != SEOF_T) {
 		program();
 	}
@@ -135,7 +173,7 @@ lp_void syncErrorHandler(lp_intg syncTokenCode) {
  */
 /* TO_DO: This is the function to error printing - adjust basically datatypes */
 lp_void printError() {
-	extern numParserErrors;			/* link to number of errors (defined in Parser.h) */
+	int extern numParserErrors;			/* link to number of errors (defined in Parser.h) */
 	Token t = lookahead;
 	printf("%s%s%3d\n", STR_LANGNAME, ": Syntax error:  Line:", line);
 	printf("*****  Token code:%3d Attribute: ", t.code);
@@ -190,6 +228,7 @@ lp_void program() {
 	switch (lookahead.code) {
 	case CMT_T:
 		comment();
+        break;
 	case MNID_T:
 		if (strncmp(lookahead.attribute.idLexeme, LANG_MAIN, 5) == 0) {
 			matchToken(MNID_T, NO_ATTR);

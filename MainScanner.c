@@ -94,8 +94,8 @@
  */
 
  /* Global objects - variables (used in other codes as external) */
-BufferPointer stringLiteralTable;	/* This buffer implements String Literal Table */
-lp_intg errorNumber;				/* Run-time error number = 0 by default (ANSI) */
+extern BufferPointer stringLiteralTable;	/* This buffer implements String Literal Table */
+extern lp_intg errorNumber;				/* Run-time error number = 0 by default (ANSI) */
 
 /* External objects */
 extern lp_intg line; /* Source code line numbers - defined in scanner.c */

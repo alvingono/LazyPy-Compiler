@@ -102,7 +102,8 @@ lp_intg errorNumber;     /* Run-time error number = 0 by default (ANSI) */
 extern lp_intg syntaxErrorNumber /* number of syntax errors reported by the parser */;
 extern lp_intg line; /* source code line number - defined in scanner.c */
 
-extern ParserData psData;
+ParserData psData;
+lp_intg numParserErrors;
 
 /*
  * -------------------------------------------------------------
@@ -132,6 +133,7 @@ static lp_void callGarbageCollector(lp_void);
 lp_intg mainParser(lp_intg argc, lp_string* argv) {
 
 	numParserErrors = 0;			/* Initializes the errors */
+    lp_intg READER_ERROR = -1;
 
 	FILE* fi;       /* input file handle */
 	lp_intg loadsize = 0; /*the size of the file loaded in the buffer */
@@ -179,7 +181,7 @@ lp_intg mainParser(lp_intg argc, lp_string* argv) {
 		}
 	}
 	/* create string Literal Table */
-	stringLiteralTable = readerCreate(READER_DEFAULT_SIZE, READER_DEFAULT_INCREMENT, MODE_ADDIT);
+    stringLiteralTable = readerCreate(READER_DEFAULT_SIZE, READER_DEFAULT_INCREMENT, MODE_ADDIT);
 	if (stringLiteralTable == NULL) {
 		printParserError("%s%s%s", argv[0], ": ", "Could not create string literal buffer");
 		exit(EXIT_FAILURE);
