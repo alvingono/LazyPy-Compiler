@@ -82,6 +82,10 @@
 #include "Scanner.h"
 #endif
 
+#ifndef PARSER_H_
+#include "Parser.h"
+#endif
+
 int numScannerErrors = 0;
 ScannerData scData;
 
@@ -188,7 +192,11 @@ Token tokenizer(lp_void) {
 
 		/* Cases for spaces */
 		case SPC_CHR:
+            printf("SPC_CHR\n");
+            numOfSpaces++;
+            break;
 		case TAB_CHR:
+            printf("TAB_CHR\n");
 			break;
 		case NWL_CHR:
 			line++;
@@ -791,6 +799,10 @@ Token funcKEY(lp_string lexeme) {
 		scData.scanHistogram[currentToken.code]++;
 		
 	}
+    // transfer the string to the current token
+    // copy the string to the current token
+    strncpy(currentToken.attribute.idLexeme, lexeme, len);
+    currentToken.attribute.idLexeme[len] = EOS_CHR;
 	return currentToken;
 }
 

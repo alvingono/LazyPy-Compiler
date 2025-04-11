@@ -66,22 +66,22 @@
 /* Global vars */
 static Token			lookahead;
 extern BufferPointer	stringLiteralTable;
-extern lp_intg		line;
+extern lp_intg		    line;
 extern Token			tokenizer(lp_void);
 extern lp_string		keywordTable[KWT_SIZE];
-static lp_intg		syntaxErrorNumber = 0;
+static lp_intg		    syntaxErrorNumber = 0;
+extern lp_intg          numOfSpaces;
 
-#define LANG_WRTE		"print&"
-#define LANG_READ		"input&"
-#define LANG_MAIN		"main&"
+#define LANG_WRTE		"print"
+#define LANG_READ		"input"
+#define LANG_MAIN		'main()'
 
 /* TO_DO: Create ALL constants for keywords (sequence given in table.h) */
 
 /* Constants */
+
 enum KEYWORDS {
 	NO_ATTR = -1,
-	KW_data,
-	KW_code,
 	KW_int,
 	KW_real,
 	KW_string,
@@ -89,7 +89,17 @@ enum KEYWORDS {
 	KW_then,
 	KW_else,
 	KW_while,
-	KW_do
+	KW_do,
+    KW_return,
+    KW_def,
+    KW_for,
+    KW_true,
+    KW_false,
+    KW_break,
+    KW_elif,
+    KW_continue,
+    KW_finally,
+    KW_print
 };
 
 /* TO_DO: Define the number of BNF rules */

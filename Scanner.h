@@ -327,8 +327,8 @@ static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	funcIL,	/* COM  [17] */
 	NULL,   /* ERR1 [18] */
 	funcCMT 	/* ERR2 [19] */
-	
-	
+
+
 };
 
 /*
@@ -338,12 +338,10 @@ Language keywords
 */
 
 /* TO_DO: Define the number of Keywords from the language */
-#define KWT_SIZE 20
+#define KWT_SIZE 17
 
 /* TO_DO: Define the list of keywords */
 static lp_string keywordTable[KWT_SIZE] = {
-	"data",		/* KW00 */
-	"code",		/* KW01 */
 	"int",		/* KW02 */
 	"real",		/* KW03 */
 	"string",	/* KW04 */
@@ -360,10 +358,8 @@ static lp_string keywordTable[KWT_SIZE] = {
 	"break",	/* KW15 */
 	"elif",	/* KW16 */
     "continue",	/* KW17 */
-	"finaly",	/* KW18 */
+	"finally",	/* KW18 */
 	"print"	/* KW19 */
-
-	
 };
 
 /* NEW SECTION: About indentation */

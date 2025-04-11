@@ -3,12 +3,11 @@
 # and should not generate any error #
 
 def main():
-    
+
     # Code section #
     def code():
         print('Hello world!')
-    
+
     code()
 
-if __name__ == "__main__":
-    main()
+main()

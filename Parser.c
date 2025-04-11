@@ -56,6 +56,7 @@
 
 /* Parser data */
 extern ParserData psData; /* BNF statistics */
+lp_intg numOfSpaces = 0;
 
 /*
 ************************************************************
@@ -73,6 +74,7 @@ lp_void startParser() {
 	/* Proceed parser */
 	lookahead = tokenizer();
     // debug
+    /*
     switch(lookahead.code) {
         case CMT_T:
             printf("CMT_T\n");
@@ -110,11 +112,74 @@ lp_void startParser() {
         default:
             printf("Unknown\n");
     }
+    */
 	if (lookahead.code != SEOF_T) {
 		program();
 	}
 	matchToken(SEOF_T, NO_ATTR);
 	printf("%s%s\n", STR_LANGNAME, ": Source file parsed");
+}
+
+lp_void printTokenType() {
+    switch (lookahead.code) {
+        case CMT_T:
+            printf("CMT_T\n");
+            break;
+        case SEOF_T:
+            printf("SEOF_T\n");
+            break;
+        case ERR_T:
+            printf("ERR_T\n");
+            break;
+        case MNID_T:
+            printf("MNID_T\n");
+            break;
+        case STR_T:
+            printf("STR_T\n");
+            break;
+        case KW_T:
+            printf("KW_T\n");
+            break;
+        case LPR_T:
+            printf("LPR_T\n");
+            break;
+        case RPR_T:
+            printf("RPR_T\n");
+            break;
+        case LBR_T:
+            printf("LBR_T\n");
+            break;
+        case RBR_T:
+            printf("RBR_T\n");
+            break;
+        case EOS_T:
+            printf("EOS_T\n");
+            break;
+        case VID_T:
+            printf("VID_T\n");
+            break;
+        case INL_T:
+            printf("INL_T\n");
+            break;
+        case FLT_T:
+            printf("FLT_T\n");
+            break;
+        case SMC_T:
+            printf("SMC_T\n");
+            break;
+        case ASG_T:
+            printf("ASG_T\n");
+            break;
+        case CMP_T:
+            printf("CMP_T\n");
+            break;
+        case SPL_VAR_T:
+            printf("SPL_VAR_T\n");
+            break;
+        default:
+            printf("Unknown\n");
+            break;
+    }
 }
 
 
@@ -125,14 +190,118 @@ lp_void startParser() {
  */
 /* TO_DO: This is the main code for match - check your definition */
 lp_void matchToken(lp_intg tokenCode, lp_intg tokenAttribute) {
+    // debug
+    /* switch(tokenCode) {
+        case CMT_T:
+            printf("CMT_T\n");
+            break;
+        case SEOF_T:
+            printf("SEOF_T\n");
+            break;
+        case ERR_T:
+            printf("ERR_T\n");
+            break;
+        case MNID_T:
+            printf("MNID_T\n");
+            break;
+        case STR_T:
+            printf("STR_T\n");
+            break;
+        case KW_T:
+            printf("KW_T\n");
+            break;
+        case LPR_T:
+            printf("LPR_T\n");
+            break;
+        case RPR_T:
+            printf("RPR_T\n");
+            break;
+        case LBR_T:
+            printf("LBR_T\n");
+            break;
+        case RBR_T:
+            printf("RBR_T\n");
+            break;
+        case EOS_T:
+            printf("EOS_T\n");
+            break;
+    } */
+    numOfSpaces = 0;
+    switch(lookahead.code) {
+        case CMT_T:
+            printf("CMT_T\n");
+            break;
+        case SEOF_T:
+            printf("SEOF_T\n");
+            break;
+        case ERR_T:
+            printf("ERR_T\n");
+            break;
+        case MNID_T:
+            printf("MNID_T\n");
+            break;
+        case STR_T:
+            printf("STR_T\n");
+            break;
+        case KW_T:
+            printf("KW_T\n");
+            break;
+        case LPR_T:
+            printf("LPR_T\n");
+            break;
+        case RPR_T:
+            printf("RPR_T\n");
+            break;
+        case LBR_T:
+            printf("LBR_T\n");
+            break;
+        case RBR_T:
+            printf("RBR_T\n");
+            break;
+        case EOS_T:
+            printf("EOS_T\n");
+            break;
+        case VID_T:
+            printf("VID_T\n");
+            break;
+        case INL_T:
+            printf("INL_T\n");
+            break;
+        case FLT_T:
+            printf("FLT_T\n");
+            break;
+        case SMC_T:
+            printf("SMC_T\n");
+            break;
+        case ASG_T:
+            printf("ASG_T\n");
+            break;
+        case CMP_T:
+            printf("CMP_T\n");
+            break;
+        case SPL_VAR_T:
+            printf("SPL_VAR_T\n");
+            break;
+        default:
+            printf("Unknown\n");
+    }
+
 	lp_intg matchFlag = 1;
 	switch (lookahead.code) {
 	case KW_T:
-		if (lookahead.attribute.codeType != tokenAttribute)
+		if ((lookahead.attribute.codeType != tokenAttribute) && (tokenAttribute != NO_ATTR))
 			matchFlag = 0;
+        break;
+
+    case VID_T:
+    case LPR_T:
+        if (tokenAttribute != NO_ATTR)
+            matchFlag = 1;
+        break;
 	default:
 		if (lookahead.code != tokenCode)
 			matchFlag = 0;
+        break;
 	}
 	if (matchFlag && lookahead.code == SEOF_T)
 		return;
@@ -225,31 +394,56 @@ lp_void program() {
 	/* Update program statistics */
 	psData.parsHistogram[BNF_program]++;
 	/* Program code */
-	switch (lookahead.code) {
-	case CMT_T:
-		comment();
-        break;
-	case MNID_T:
-		if (strncmp(lookahead.attribute.idLexeme, LANG_MAIN, 5) == 0) {
-			matchToken(MNID_T, NO_ATTR);
-			matchToken(LPR_T, NO_ATTR);
-			matchToken(RPR_T, NO_ATTR);
-			matchToken(LBR_T, NO_ATTR);
-			dataSession();
-			codeSession();
-			matchToken(RBR_T, NO_ATTR);
-			break;
-		}
-		else {
-			printError();
-		}
-	case SEOF_T:
-		; // Empty
-		break;
-	default:
-		printError();
-	}
-	printf("%s%s\n", STR_LANGNAME, ": Program parsed");
+    while (lookahead.code != SEOF_T) {
+        switch (lookahead.code) {
+            case CMT_T:
+                comment();
+
+                break;
+                /*
+                case KW_T:
+                    // handle case for def FUNC_NAME(POSSIBLE VALUES)
+                    if (lookahead.attribute.codeType == KW_T && strncmp(lookahead.attribute.idLexeme, LANG_MAIN, 5) == 0) {
+                        matchToken(KW_T, KW_main);
+                        matchToken(LPR_T, NO_ATTR);
+                        matchToken(RPR_T, NO_ATTR);
+                        matchToken(LBR_T, NO_ATTR);
+                        optionalStatements();
+                        matchToken(RBR_T, NO_ATTR);
+                        break;
+                    }
+                    else {
+                        printError();
+                }
+                */
+            case KW_T:
+                // we have a keyword, could be def, int.
+                // check for def
+                printf("%s\n", lookahead.attribute.idLexeme);
+                if (strncmp(lookahead.attribute.idLexeme, "def", 3) == 0) {
+                    matchToken(KW_T, KW_def);
+                    matchToken(VID_T, NO_ATTR);
+                    matchToken(LPR_T, NO_ATTR);
+                    matchToken(RPR_T, NO_ATTR);
+                    matchToken(SMC_T, NO_ATTR);
+                    optionalStatements();
+                }
+                break;
+
+            case MNID_T:
+                // we have a method name
+                break;
+            case SEOF_T:
+                ; // Empty
+                break;
+            default:
+                // print token type
+                printf("%s%s%d\n", STR_LANGNAME, ": Scanner error: invalid token code: ", (enum TOKENS) lookahead.code);
+                printTokenType();
+                printError();
+        }
+    }
+    printf("%s%s\n", STR_LANGNAME, ": Program parsed");
 }
 
 /*
@@ -261,6 +455,9 @@ lp_void program() {
  */
 lp_void comment() {
 	psData.parsHistogram[BNF_comment]++;
+
+    // consume entire comment token
+
 	matchToken(CMT_T, NO_ATTR);
 	printf("%s%s\n", STR_LANGNAME, ": Comment parsed");
 }
@@ -278,7 +475,7 @@ lp_void dataSession() {
 	case CMT_T:
 		comment();
 	default:
-		matchToken(KW_T, KW_data);
+		// matchToken(KW_T, KW_data);
 		matchToken(LBR_T, NO_ATTR);
 		optVarListDeclarations();
 		matchToken(RBR_T, NO_ATTR);
@@ -315,7 +512,7 @@ lp_void codeSession() {
 	case CMT_T:
 		comment();
 	default:
-		matchToken(KW_T, KW_code);
+		// matchToken(KW_T, KW_code);
 		matchToken(LBR_T, NO_ATTR);
 		optionalStatements();
 		matchToken(RBR_T, NO_ATTR);
@@ -335,18 +532,51 @@ lp_void codeSession() {
  */
 lp_void optionalStatements() {
 	psData.parsHistogram[BNF_optionalStatements]++;
-	switch (lookahead.code) {
-	case CMT_T:
-		comment();
-	case MNID_T:
-		if ((strncmp(lookahead.attribute.idLexeme, LANG_WRTE, 6) == 0) ||
-			(strncmp(lookahead.attribute.idLexeme, LANG_READ, 6) == 0)) {
-			statements();
-			break;
-		}
-	default:
-		; // Empty
-	}
+    if (numOfSpaces % 4 != 0) {
+        printf("ERROR: Indentation error\n");
+        return;
+    }
+    lp_intg currentIndent = (lp_intg) numOfSpaces / 4;
+    printf("CURRENT INDENT: %d\n", currentIndent);
+    while (currentIndent == numOfSpaces / 4) {
+        switch (lookahead.code) {
+            case CMT_T:
+                comment();
+                break;
+            case MNID_T:
+                if ((strncmp(lookahead.attribute.idLexeme, LANG_WRTE, 6) == 0) ||
+                    (strncmp(lookahead.attribute.idLexeme, LANG_READ, 6) == 0)) {
+                    statements();
+                    break;
+                }
+            case KW_T:
+                // we have a keyword, could be def, int.
+                // check for def
+                printf("%s\n", lookahead.attribute.idLexeme);
+                if (strncmp(lookahead.attribute.idLexeme, "def", 3) == 0) {
+                    matchToken(KW_T, KW_def);
+                    matchToken(VID_T, NO_ATTR);
+                    matchToken(LPR_T, NO_ATTR);
+                    matchToken(RPR_T, NO_ATTR);
+                    matchToken(SMC_T, NO_ATTR);
+                    optionalStatements();
+                } else if (strncmp(lookahead.attribute.idLexeme, "print", 4) == 0) {
+                    matchToken(KW_T, KW_print);
+                    matchToken(LPR_T, NO_ATTR);
+                    matchToken(STR_T, KW_string);
+                    matchToken(RPR_T, NO_ATTR);
+                }
+                break;
+            case VID_T:
+                // we have a method name or a variable.
+                // check to see if its valid.
+                matchToken(LPR_T, NO_ATTR);
+                break;
+            default:
+                printTokenType();
+                break;
+        }
+    }
 	printf("%s%s\n", STR_LANGNAME, ": Optional statements parsed");
 }
 
