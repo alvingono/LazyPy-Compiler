@@ -192,7 +192,7 @@ Token tokenizer(lp_void) {
 
 		/* Cases for spaces */
 		case SPC_CHR:
-            printf("SPC_CHR\n");
+            // printf("SPC_CHR\n");
             numOfSpaces++;
             break;
 		case TAB_CHR:

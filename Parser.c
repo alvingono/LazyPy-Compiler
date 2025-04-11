@@ -227,7 +227,7 @@ lp_void matchToken(lp_intg tokenCode, lp_intg tokenAttribute) {
             break;
     } */
     numOfSpaces = 0;
-    switch(lookahead.code) {
+    /* switch(lookahead.code) {
         case CMT_T:
             printf("CMT_T\n");
             break;
@@ -284,7 +284,7 @@ lp_void matchToken(lp_intg tokenCode, lp_intg tokenAttribute) {
             break;
         default:
             printf("Unknown\n");
-    }
+    } */
 
 	lp_intg matchFlag = 1;
 	switch (lookahead.code) {
@@ -419,7 +419,7 @@ lp_void program() {
             case KW_T:
                 // we have a keyword, could be def, int.
                 // check for def
-                printf("%s\n", lookahead.attribute.idLexeme);
+                // printf("%s\n", lookahead.attribute.idLexeme);
                 if (strncmp(lookahead.attribute.idLexeme, "def", 3) == 0) {
                     matchToken(KW_T, KW_def);
                     matchToken(VID_T, NO_ATTR);
@@ -436,10 +436,17 @@ lp_void program() {
             case SEOF_T:
                 ; // Empty
                 break;
+            case VID_T:
+                // we have a method name or a variable.
+                // check to see if its valid.
+                matchToken(VID_T, NO_ATTR);
+                matchToken(LPR_T, NO_ATTR);
+                matchToken(RPR_T, NO_ATTR);
+                break;
             default:
                 // print token type
-                printf("%s%s%d\n", STR_LANGNAME, ": Scanner error: invalid token code: ", (enum TOKENS) lookahead.code);
-                printTokenType();
+                // printf("%s%s%d\n", STR_LANGNAME, ": Scanner error: invalid token code: ", (enum TOKENS) lookahead.code);
+                // printTokenType();
                 printError();
         }
     }
@@ -537,7 +544,7 @@ lp_void optionalStatements() {
         return;
     }
     lp_intg currentIndent = (lp_intg) numOfSpaces / 4;
-    printf("CURRENT INDENT: %d\n", currentIndent);
+    // printf("CURRENT INDENT: %d\n", currentIndent);
     while (currentIndent == numOfSpaces / 4) {
         switch (lookahead.code) {
             case CMT_T:
@@ -552,7 +559,7 @@ lp_void optionalStatements() {
             case KW_T:
                 // we have a keyword, could be def, int.
                 // check for def
-                printf("%s\n", lookahead.attribute.idLexeme);
+                // printf("%s\n", lookahead.attribute.idLexeme);
                 if (strncmp(lookahead.attribute.idLexeme, "def", 3) == 0) {
                     matchToken(KW_T, KW_def);
                     matchToken(VID_T, NO_ATTR);
@@ -570,10 +577,12 @@ lp_void optionalStatements() {
             case VID_T:
                 // we have a method name or a variable.
                 // check to see if its valid.
+                matchToken(VID_T, NO_ATTR);
                 matchToken(LPR_T, NO_ATTR);
+                matchToken(RPR_T, NO_ATTR);
                 break;
             default:
-                printTokenType();
+                // printTokenType();
                 break;
         }
     }

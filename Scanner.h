@@ -338,7 +338,7 @@ Language keywords
 */
 
 /* TO_DO: Define the number of Keywords from the language */
-#define KWT_SIZE 17
+#define KWT_SIZE 18
 
 /* TO_DO: Define the list of keywords */
 static lp_string keywordTable[KWT_SIZE] = {
