@@ -192,13 +192,14 @@ Token tokenizer(lp_void) {
 
 		/* Cases for spaces */
 		case SPC_CHR:
-            // printf("SPC_CHR\n");
+            printf("SPC_CHR\n");
             numOfSpaces++;
             break;
 		case TAB_CHR:
             printf("TAB_CHR\n");
 			break;
 		case NWL_CHR:
+            numOfSpaces = 0;
 			line++;
 			break;
 
@@ -220,10 +221,10 @@ Token tokenizer(lp_void) {
             } else {
                 currentToken.code = ASG_T;
                 scData.scanHistogram[currentToken.code]++;
-                // we have a assignment operator now we check what exactly is being assigned
+                // we have an assignment operator now we check what exactly is being assigned
 
                 // loop until we reach a new line character
-                int innerSize = 0;
+                lp_intg innerSize = 0;
                 while ((c = readerGetChar(sourceBuffer)) != NWL_CHR) {
                     // if we reach a new line character then we have reached the end of the assignment
                     if (c == NWL_CHR) {

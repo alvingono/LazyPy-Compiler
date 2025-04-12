@@ -180,6 +180,7 @@ lp_void printTokenType() {
             printf("Unknown\n");
             break;
     }
+    printf("%s\n", lookahead.attribute.idLexeme);
 }
 
 
@@ -544,7 +545,7 @@ lp_void optionalStatements() {
         return;
     }
     lp_intg currentIndent = (lp_intg) numOfSpaces / 4;
-    // printf("CURRENT INDENT: %d\n", currentIndent);
+    printf("CURRENT INDENT: %d\n", currentIndent);
     while (currentIndent == numOfSpaces / 4) {
         switch (lookahead.code) {
             case CMT_T:
@@ -570,22 +571,54 @@ lp_void optionalStatements() {
                 } else if (strncmp(lookahead.attribute.idLexeme, "print", 4) == 0) {
                     matchToken(KW_T, KW_print);
                     matchToken(LPR_T, NO_ATTR);
-                    matchToken(STR_T, KW_string);
+                    printTokenType();
+                    if (lookahead.code == STR_T) {
+                        matchToken(STR_T, NO_ATTR);
+                    } else if (lookahead.code == VID_T) {
+                        matchToken(VID_T, NO_ATTR);
+                    }
                     matchToken(RPR_T, NO_ATTR);
+                } else if (strncmp(lookahead.attribute.idLexeme, "input", 5) == 0) {
+
+                } else if (strncmp(lookahead.attribute.idLexeme, "int", 3) == 0) {
+                    matchToken(KW_T, KW_int);
+                    printTokenType();
+                } else if (strncmp(lookahead.attribute.idLexeme, "while", 5) == 0) {
+                    matchToken(KW_T, KW_while);
+                    matchToken(VID_T, NO_ATTR);
+                    matchToken(CMP_T, NO_ATTR);
+                    optionalStatements();
+                    printTokenType();
+                } else if (strncmp(lookahead.attribute.idLexeme, "return", 6) == 0) {
+                    matchToken(KW_T, KW_return);
+                    printTokenType();
+                    matchToken(VID_T, NO_ATTR);
+                }
+                else {
+                    printf("%s\n", lookahead.attribute.idLexeme);
+                    printTokenType();
                 }
                 break;
             case VID_T:
                 // we have a method name or a variable.
                 // check to see if its valid.
+                // printf("%s\n", lookahead.attribute.idLexeme);
                 matchToken(VID_T, NO_ATTR);
-                matchToken(LPR_T, NO_ATTR);
-                matchToken(RPR_T, NO_ATTR);
+
+                if (lookahead.code == LPR_T) {
+                    matchToken(LPR_T, NO_ATTR);
+                    matchToken(RPR_T, NO_ATTR);
+                } else if (lookahead.code == ASG_T) {
+                    matchToken(ASG_T, NO_ATTR);
+                }
+
                 break;
             default:
                 // printTokenType();
                 break;
         }
     }
+    printf("FINAL INDENT: %d\n", numOfSpaces / 4);
 	printf("%s%s\n", STR_LANGNAME, ": Optional statements parsed");
 }
 
